@@ -31,7 +31,7 @@ def formatToAddAllNumbers(gridArray, squareSize):    # function to add all possi
                             gridArray[i][j][k][l].append(str(m+1))    # adds the numbers 1 to 9 to each blank position
     return gridArray    # another function will go through and remove any invalid numbers later
 
-def checkForCompletedSquare(gridArray,squareSize,a,b):    # function to check if the given large square is completed
+def checkForCompletedSquare(gridArray,squareSize,a,b,c,d):    # function to check if the given large square is completed
     total = 0
     for i in range(squareSize):
         for j in range(squareSize):
@@ -40,20 +40,20 @@ def checkForCompletedSquare(gridArray,squareSize,a,b):    # function to check if
         return True
     return False    # returns false if not
 
-def checkForCompletedRow(gridArray,squareSize,a,b):    # function to find if the row of the given coordinate is completed (pass in 1st and 3rd coordinate as parameters)
+def checkForCompletedRow(gridArray,squareSize,a,b,c,d):    # function to find if the row of the given coordinate is completed (pass in 1st and 3rd coordinate as parameters)
     total = 0
     for i in range(squareSize):
         for j in range(squareSize):
-            total += int(gridArray[a][i][b][j][0])    # finds the sum of all the numbers 
+            total += int(gridArray[a][i][c][j][0])    # finds the sum of all the numbers 
     if total == 45:    # the sum of all the possible numbers is 45 so returns true if it is that
         return True
     return False    # returns false if not completed
 
-def checkForCompletedColumn(gridArray,squareSize,a,b):     # function to find if the column of the given coordinate is comppleted (pass in 2nd and 4th coordinate as parameters)
+def checkForCompletedColumn(gridArray,squareSize,a,b,c,d):     # function to find if the column of the given coordinate is comppleted (pass in 2nd and 4th coordinate as parameters)
     total = 0
     for i in range(squareSize):
         for j in range(squareSize):
-            total += int(gridArray[i][a][j][b][0])    # finds the sum of all the numbers in the column
+            total += int(gridArray[i][b][j][d][0])    # finds the sum of all the numbers in the column
     if total == 45:
         return True    # returns true if all the numbers are present
     return False
@@ -68,42 +68,42 @@ def checkGridIsCompleted(gridArray, squareSize):    # function to check if all t
     gridsCorrect = 0
     for i in range(squareSize):
         for j in range(squareSize):
-            correctGrid = checkForCompletedSquare(gridArray,squareSize,i,j)    # uses the other function to check if each grid is valid
+            correctGrid = checkForCompletedSquare(gridArray,squareSize,i,j,None,None)    # uses the other function to check if each grid is valid
             if correctGrid == True:
                 gridsCorrect += 1    # adds one if the grid is returned as true
     rowsCorrect = 0
     for i in range(squareSize):
         for j in range(squareSize):
-            correctRow = checkForCompletedRow(gridArray,squareSize,i,j)    # could combine all the checking into 1 <<<<<<<<<<<<< read pls ###########
+            correctRow = checkForCompletedRow(gridArray,squareSize,i,None,j,None)    # could combine all the checking into 1 <<<<<<<<<<<<< read pls ###########
             if correctRow == True:
                 rowsCorrect += 1
     columnsCorrect = 0
     for i in range(squareSize):
         for j in range(squareSize):
-            correctColumn = checkForCompletedColumn(gridArray,squareSize,i,j)
+            correctColumn = checkForCompletedColumn(gridArray,squareSize,None,i,None,j)
             if correctColumn == True:
                 columnsCorrect += 1
     if gridsCorrect and rowsCorrect and columnsCorrect == squareSize*squareSize:
         return True    # if the number of grids and rows and columns correct is equal to the squareSize squared, the grid is deemed to be correct
     return False
 
-def findNumbersInRow(gridArray,squareSize,a,b):
+def findNumbersInRow(gridArray,squareSize,a,b,c,d):
     numbersInRow = []
     for i in range(squareSize):
         for j in range(squareSize):
-            if gridArray[a][i][b][j][0] != '0':
-                numbersInRow.append(gridArray[a][i][b][j][0])
+            if gridArray[a][i][c][j][0] != '0':
+                numbersInRow.append(gridArray[a][i][c][j][0])
     return numbersInRow
 
-def findNumbersInColumn(gridArray,squareSize,a,b):
+def findNumbersInColumn(gridArray,squareSize,a,b,c,d):
     numbersInColumn = []
     for i in range(squareSize):
         for j in range(squareSize):
-            if gridArray[i][a][j][b][0] != '0':
-                numbersInColumn.append(gridArray[i][a][j][b][0])
+            if gridArray[i][b][j][d][0] != '0':
+                numbersInColumn.append(gridArray[i][b][j][d][0])
     return numbersInColumn
 
-def findNumbersInSquare(gridArray,squareSize,a,b):
+def findNumbersInSquare(gridArray,squareSize,a,b,c,d):
     numbersInSquare = []
     for i in range(squareSize):
         for j in range(squareSize):
@@ -116,15 +116,15 @@ print(gridArray, '\n')
 gridArary = formatToAddAllNumbers(gridArray, squareSize)
 print(gridArray)
 print(gridArray[0][0][0][1])
-completedSquare = checkForCompletedSquare(gridArray,squareSize,0,1)
+completedSquare = checkForCompletedSquare(gridArray,squareSize,0,0,0,1)
 print(completedSquare)
-completedRow = checkForCompletedRow(gridArray,squareSize,0,1)
+completedRow = checkForCompletedRow(gridArray,squareSize,0,0,0,1)
 print(completedRow)
-completedColumn = checkForCompletedColumn(gridArray,squareSize,0,1)
+completedColumn = checkForCompletedColumn(gridArray,squareSize,0,0,0,1)
 print(completedColumn)
 finished = checkGridIsCompleted(gridArray, squareSize)
 print(finished)
-print(findNumbersInRow(gridArray,squareSize,0,1))
-print(findNumbersInColumn(gridArray,squareSize,0,1))
-print(findNumbersInSquare(gridArray,squareSize,0,0))
+print(findNumbersInRow(gridArray,squareSize,0,0,0,1))
+print(findNumbersInColumn(gridArray,squareSize,0,0,0,1))
+print(findNumbersInSquare(gridArray,squareSize,0,0,0,1))
 # write functions which return a list of numbers in that row/square/column etc
