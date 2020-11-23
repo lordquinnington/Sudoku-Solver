@@ -111,20 +111,36 @@ def findNumbersInSquare(gridArray,squareSize,a,b,c,d):
                 numbersInSquare.append(gridArray[a][b][i][j][0])
     return numbersInSquare
 
+def eliminateNotPossibleNumbers(gridArray,squareSize,a,b,c,d):
+    numbersToRemove = []
+    numbersToRemove.append(findNumbersInSquare(gridArray,squareSize,a,b,None,None))
+    numbersToRemove.append(findNumbersInRow(gridArray,squareSize,a,None,c,None))
+    numbersToRemove.append(findNumbersInColumn(gridArray,squareSize,None,b,None,d))
+    for i in range(squareSize):
+        for j in range(len(numbersToRemove[i])):
+            #print(numbersToRemove[i][j])
+            try:
+                gridArray[a][b][c][d].remove(numbersToRemove[i][j])
+            except ValueError:
+                pass
+    return gridArray
+    
+
 gridArray, squareSize = formatSudokuGrid()
 print(gridArray, '\n')
 gridArary = formatToAddAllNumbers(gridArray, squareSize)
 print(gridArray)
-print(gridArray[0][0][0][1])
-completedSquare = checkForCompletedSquare(gridArray,squareSize,0,0,0,1)
-print(completedSquare)
-completedRow = checkForCompletedRow(gridArray,squareSize,0,0,0,1)
-print(completedRow)
-completedColumn = checkForCompletedColumn(gridArray,squareSize,0,0,0,1)
-print(completedColumn)
+##print(gridArray[0][0][0][1])
+##completedSquare = checkForCompletedSquare(gridArray,squareSize,0,0,0,1)
+##print(completedSquare)
+##completedRow = checkForCompletedRow(gridArray,squareSize,0,0,0,1)
+##print(completedRow)
+##completedColumn = checkForCompletedColumn(gridArray,squareSize,0,0,0,1)
+##print(completedColumn)
 finished = checkGridIsCompleted(gridArray, squareSize)
 print(finished)
-print(findNumbersInRow(gridArray,squareSize,0,0,0,1))
-print(findNumbersInColumn(gridArray,squareSize,0,0,0,1))
-print(findNumbersInSquare(gridArray,squareSize,0,0,0,1))
+print(findNumbersInRow(gridArray,squareSize,0,0,0,2))
+print(findNumbersInColumn(gridArray,squareSize,0,0,0,2))
+print(findNumbersInSquare(gridArray,squareSize,0,0,0,2))
+eliminateNotPossibleNumbers(gridArray,squareSize,0,0,0,2)
 # write functions which return a list of numbers in that row/square/column etc
