@@ -18,7 +18,7 @@ def formatSudokuGrid():    # function to turn the 2D csv grid into a 5D array
                     tempArray3.append(tempArray4)
                 tempArray2.append(tempArray3)
             tempArray1.append(tempArray2)
-        gridArray4D.append(tempArray1)    # those arrays are then appended onto each other till a 4D array is formed                
+        gridArray4D.append(tempArray1)    # those arrays are then appended onto each other till a 5D array is formed                
     return gridArray4D, squareSize
 
 def formatToAddAllNumbers(gridArray, squareSize):    # function to add all possible numbers to each blank position
@@ -49,7 +49,14 @@ def checkForCompletedRow(gridArray,a,b,c,d):    # function to find if the row of
         return True
     return False    # returns false if not completed
 
-def checkForCompletedColumn(
+def checkForCompletedColumn(gridArray,a,b,c,d):     # function to find if the column of the given coordinate is comppleted
+    total = 0
+    for i in range(len(gridArray[a])):
+        for j in range(len(gridArray[c])):
+            total += int(gridArray[i][b][j][d][0])    # finds the sum of all the numbers in the column
+    if total == 45:
+        return True    # returns true if all the numbers are present
+    return False
 
 gridArray, squareSize = formatSudokuGrid()
 print(gridArray, '\n')
@@ -60,3 +67,5 @@ completedSquare = checkForCompletedSquare(gridArray, 0, 1)
 print(completedSquare)
 completedRow = checkForCompletedRow(gridArray,0,0,0,1)
 print(completedRow)
+completedColumn = checkForCompletedColumn(gridArray,0,0,0,1)
+print(completedColumn)
