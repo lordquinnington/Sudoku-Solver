@@ -63,7 +63,7 @@ def checkGridIsCompleted(gridArray, squareSize):    # function to check if all t
         for j in range(squareSize):
             for k in range(squareSize):
                 for l in range(squareSize):
-                    if gridArray[i][j][k][l][0] == 0:     # checks each space for a zero, which would indicate if it's been solved or not
+                    if gridArray[i][j][k][l][0] == '0':     # checks each space for a zero, which would indicate if it's been solved or not
                         return False
     gridsCorrect = 0
     for i in range(squareSize):
@@ -74,7 +74,7 @@ def checkGridIsCompleted(gridArray, squareSize):    # function to check if all t
     rowsCorrect = 0
     for i in range(squareSize):
         for j in range(squareSize):
-            correctRow = checkForCompletedRow(gridArray,squareSize,i,j)
+            correctRow = checkForCompletedRow(gridArray,squareSize,i,j)    # could combine all the checking into 1 <<<<<<<<<<<<< read pls ###########
             if correctRow == True:
                 rowsCorrect += 1
     columnsCorrect = 0
@@ -86,6 +86,30 @@ def checkGridIsCompleted(gridArray, squareSize):    # function to check if all t
     if gridsCorrect and rowsCorrect and columnsCorrect == squareSize*squareSize:
         return True    # if the number of grids and rows and columns correct is equal to the squareSize squared, the grid is deemed to be correct
     return False
+
+def findNumbersInRow(gridArray,squareSize,a,b):
+    numbersInRow = []
+    for i in range(squareSize):
+        for j in range(squareSize):
+            if gridArray[a][i][b][j][0] != '0':
+                numbersInRow.append(gridArray[a][i][b][j][0])
+    return numbersInRow
+
+def findNumbersInColumn(gridArray,squareSize,a,b):
+    numbersInColumn = []
+    for i in range(squareSize):
+        for j in range(squareSize):
+            if gridArray[i][a][j][b][0] != '0':
+                numbersInColumn.append(gridArray[i][a][j][b][0])
+    return numbersInColumn
+
+def findNumbersInSquare(gridArray,squareSize,a,b):
+    numbersInSquare = []
+    for i in range(squareSize):
+        for j in range(squareSize):
+            if gridArray[a][b][i][j][0] != '0':
+                numbersInSquare.append(gridArray[a][b][i][j][0])
+    return numbersInSquare
 
 gridArray, squareSize = formatSudokuGrid()
 print(gridArray, '\n')
@@ -100,4 +124,7 @@ completedColumn = checkForCompletedColumn(gridArray,squareSize,0,1)
 print(completedColumn)
 finished = checkGridIsCompleted(gridArray, squareSize)
 print(finished)
-# 
+print(findNumbersInRow(gridArray,squareSize,0,1))
+print(findNumbersInColumn(gridArray,squareSize,0,1))
+print(findNumbersInSquare(gridArray,squareSize,0,0))
+# write functions which return a list of numbers in that row/square/column etc
