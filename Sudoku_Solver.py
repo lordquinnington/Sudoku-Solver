@@ -119,17 +119,21 @@ def eliminateNotPossibleNumbers(gridArray,squareSize,a,b,c,d):
     for i in range(squareSize):
         for j in range(len(numbersToRemove[i])):
             #print(numbersToRemove[i][j])
-            try:
-                gridArray[a][b][c][d].remove(numbersToRemove[i][j])
-            except ValueError:
-                pass
+            if gridArray[a][b][c][d][0] == '0':
+                if len(gridArray[a][b][c][d]) == 2:
+                    gridArray[a][b][c][d].remove('0')
+                else:
+                    try:
+                        gridArray[a][b][c][d].remove(numbersToRemove[i][j])
+                    except ValueError:
+                        pass
     return gridArray
     
 
 gridArray, squareSize = formatSudokuGrid()
-print(gridArray, '\n')
+##print(gridArray, '\n')
 gridArary = formatToAddAllNumbers(gridArray, squareSize)
-print(gridArray)
+##print(gridArray)
 ##print(gridArray[0][0][0][1])
 ##completedSquare = checkForCompletedSquare(gridArray,squareSize,0,0,0,1)
 ##print(completedSquare)
@@ -137,10 +141,30 @@ print(gridArray)
 ##print(completedRow)
 ##completedColumn = checkForCompletedColumn(gridArray,squareSize,0,0,0,1)
 ##print(completedColumn)
-finished = checkGridIsCompleted(gridArray, squareSize)
-print(finished)
-print(findNumbersInRow(gridArray,squareSize,0,0,0,2))
-print(findNumbersInColumn(gridArray,squareSize,0,0,0,2))
-print(findNumbersInSquare(gridArray,squareSize,0,0,0,2))
-eliminateNotPossibleNumbers(gridArray,squareSize,0,0,0,2)
-# write functions which return a list of numbers in that row/square/column etc
+##finished = checkGridIsCompleted(gridArray, squareSize)
+##print(finished)
+##print(findNumbersInRow(gridArray,squareSize,0,0,0,2))
+##print(findNumbersInColumn(gridArray,squareSize,0,0,0,2))
+##print(findNumbersInSquare(gridArray,squareSize,0,0,0,2))
+##eliminateNotPossibleNumbers(gridArray,squareSize,0,0,0,2)
+
+
+finished = checkGridIsCompleted(gridArray,squareSize)
+while not finished:
+    print(gridArray)
+    input("enter to continue")
+    for i in range(squareSize):
+        for j in range(squareSize):
+            for k in range(squareSize):
+                for l in range(squareSize):
+                    gridArray = eliminateNotPossibleNumbers(gridArray,squareSize,i,j,k,l)
+    finished = checkGridIsCompleted(gridArray,squareSize)
+
+print(gridArray)
+print("finished")
+
+
+
+
+
+    
