@@ -58,6 +58,23 @@ def checkForCompletedColumn(gridArray,a,b,c,d):     # function to find if the co
         return True    # returns true if all the numbers are present
     return False
 
+def checkGridIsCompleted(gridArray, squareSize):    # function to check if all the squares in the grid are filled in (correct or not is decided later)
+    for i in range(squareSize):
+        for j in range(squareSize):
+            for k in range(squareSize):
+                for l in range(squareSize):
+                    if gridArray[i][j][k][l][0] == 0:     # checks each space for a zero, which would indicate if it's been solved or not
+                        return False
+    gridsCorrect = 0
+    for i in range(squareSize):
+        for j in range(squareSize):
+            correctGrid = checkForCompletedSquare(gridArray,i,j)    # uses the other function to check if each grid is valid
+            if correctGrid == True:
+                gridsCorrect += 1    # adds one if the grid is returned as true
+    if gridsCorrect == squareSize*squareSize:
+        return True    # if the number of grids is equal to the number of squares, the grid is deemed completed
+    return False
+
 gridArray, squareSize = formatSudokuGrid()
 print(gridArray, '\n')
 gridArary = formatToAddAllNumbers(gridArray, squareSize)
@@ -69,3 +86,6 @@ completedRow = checkForCompletedRow(gridArray,0,0,0,1)
 print(completedRow)
 completedColumn = checkForCompletedColumn(gridArray,0,0,0,1)
 print(completedColumn)
+finished = checkGridIsCompleted(gridArray, squareSize)
+print(finished)
+# write a function which checks the board is solved by cheching for no 0s and then is correct by checking each box adds to 45 (can use check for completed square function)
