@@ -3,7 +3,7 @@
 import csv
 
 def formatSudokuGrid():    # function to turn the 2D csv grid into a 5D array
-    with open ("Sudoku_Grid.csv","r") as sudokuGrid:    # opens the csv file in read mode and converts into a 2D array
+    with open ("Sudoku_Grid_2.csv","r") as sudokuGrid:    # opens the csv file in read mode and converts into a 2D array
         gridArray2D = list(csv.reader(sudokuGrid))
     squareSize = int(len(gridArray2D[0])**0.5)    # finds the size of the squares, so not limited by a 3x3 grid
     gridArray4D = []
@@ -118,7 +118,6 @@ def eliminateNotPossibleNumbers(gridArray,squareSize,a,b,c,d):
     numbersToRemove.append(findNumbersInColumn(gridArray,squareSize,None,b,None,d))
     for i in range(squareSize):
         for j in range(len(numbersToRemove[i])):
-            #print(numbersToRemove[i][j])
             if gridArray[a][b][c][d][0] == '0':
                 if len(gridArray[a][b][c][d]) == 2:
                     gridArray[a][b][c][d].remove('0')
@@ -129,27 +128,25 @@ def eliminateNotPossibleNumbers(gridArray,squareSize,a,b,c,d):
                         pass
     return gridArray
     
+def writeCompletedGridToCSV(gridArray, squareSize):
+    gridArray1D = []
+    for i in range(squareSize):
+        for j in range(squareSize):
+            for k in range(squareSize):
+                for l in range(squareSize):
+                    gridArray1D.append(gridArray[i][k][j][l][0])
+    print(gridArray1D)
+    open("Sudoku_Grid_Completed_2.csv", "x")
+    with open("Sudoku_Grid_Completed_2.csv", "w", newline='') as completedGridFile:
+        toWrite = csv.writer(completedGridFile, delimiter='')
+        
+    
 
 gridArray, squareSize = formatSudokuGrid()
-##print(gridArray, '\n')
 gridArary = formatToAddAllNumbers(gridArray, squareSize)
-##print(gridArray)
-##print(gridArray[0][0][0][1])
-##completedSquare = checkForCompletedSquare(gridArray,squareSize,0,0,0,1)
-##print(completedSquare)
-##completedRow = checkForCompletedRow(gridArray,squareSize,0,0,0,1)
-##print(completedRow)
-##completedColumn = checkForCompletedColumn(gridArray,squareSize,0,0,0,1)
-##print(completedColumn)
-##finished = checkGridIsCompleted(gridArray, squareSize)
-##print(finished)
-##print(findNumbersInRow(gridArray,squareSize,0,0,0,2))
-##print(findNumbersInColumn(gridArray,squareSize,0,0,0,2))
-##print(findNumbersInSquare(gridArray,squareSize,0,0,0,2))
-##eliminateNotPossibleNumbers(gridArray,squareSize,0,0,0,2)
-
 
 finished = checkGridIsCompleted(gridArray,squareSize)
+
 while not finished:
     print(gridArray)
     input("enter to continue")
@@ -162,8 +159,8 @@ while not finished:
 
 print(gridArray)
 print("finished")
-
-
+writeCompletedGridToCSV(gridArray, squareSize)
+# write something to guess at the solution and also something to convert it back into a 2d array and write back to a csv file
 
 
 
