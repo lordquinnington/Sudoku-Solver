@@ -3,7 +3,7 @@
 import csv
 
 def formatSudokuGrid():    # function to turn the 2D csv grid into a 5D array
-    with open ("Sudoku_Grid.csv","r") as sudokuGrid:    # opens the csv file in read mode and converts into a 2D array
+    with open ("Sudoku_Grid_3.csv","r") as sudokuGrid:    # opens the csv file in read mode and converts into a 2D array
         gridArray2D = list(csv.reader(sudokuGrid))
     squareSize = int(len(gridArray2D[0])**0.5)    # finds the size of the squares, so not limited by a 3x3 grid
     gridArray4D = []
@@ -143,10 +143,10 @@ def formatTo2DArray(gridArray, squareSize):
         gridArray2D.append(tempArray)
     return gridArray2D
 
-def writeCompletedGridToCSV(gridArray2D, squareSize)      
+def writeCompletedGridToCSV(gridArray2D, squareSize):      
     try:
-        open("Sudoku_Grid_Completed.csv", "x")
-        with open("Sudoku_Grid_Completed.csv", "w", newline='') as completedGridFile:
+        open("Sudoku_Grid_Completed_3.csv", "x")
+        with open("Sudoku_Grid_Completed_3.csv", "w", newline='') as completedGridFile:
             toWrite = csv.writer(completedGridFile, delimiter=',')
             for row in gridArray2D:
                 toWrite.writerow(row)
@@ -172,7 +172,7 @@ while not finished:
 print(gridArray)
 print("finished")
 
-formatTo2DArray(gridArray, squareSize)
+gridArray2D = formatTo2DArray(gridArray, squareSize)
 writeCompletedGridToCSV(gridArray2D, squareSize)
 # write something to guess at the solution
 # change what it sums to 9+8+7+6 etc not just 45
