@@ -128,22 +128,22 @@ def eliminateNotPossibleNumbers(gridArray,squareSize,a,b,c,d):
                         pass
     return gridArray
     
-def writeCompletedGridToCSV(gridArray, squareSize):
+def formatTo2DArray(gridArray, squareSize):
     gridArray1D = []
     for i in range(squareSize):
         for j in range(squareSize):
             for k in range(squareSize):
                 for l in range(squareSize):
                     gridArray1D.append(gridArray[i][k][j][l][0])
-    print(gridArray1D)
     gridArray2D = []
     for i in range(squareSize*squareSize):
         tempArray = []
         for j in range(squareSize*squareSize):
             tempArray.append(gridArray1D[9*i+j])
         gridArray2D.append(tempArray)
-    print(gridArray2D)
-        
+    return gridArray2D
+
+def writeCompletedGridToCSV(gridArray2D, squareSize)      
     try:
         open("Sudoku_Grid_Completed.csv", "x")
         with open("Sudoku_Grid_Completed.csv", "w", newline='') as completedGridFile:
@@ -153,9 +153,6 @@ def writeCompletedGridToCSV(gridArray, squareSize):
                 
     except FileExistsError:
         pass
-    
-        
-    
 
 gridArray, squareSize = formatSudokuGrid()
 gridArary = formatToAddAllNumbers(gridArray, squareSize)
@@ -174,8 +171,11 @@ while not finished:
 
 print(gridArray)
 print("finished")
-writeCompletedGridToCSV(gridArray, squareSize)
-# write something to guess at the solution and also something to convert it back into a 2d array and write back to a csv file
+
+formatTo2DArray(gridArray, squareSize)
+writeCompletedGridToCSV(gridArray2D, squareSize)
+# write something to guess at the solution
+# change what it sums to 9+8+7+6 etc not just 45
 
 
 
