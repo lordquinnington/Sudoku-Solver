@@ -136,9 +136,21 @@ def writeCompletedGridToCSV(gridArray, squareSize):
                 for l in range(squareSize):
                     gridArray1D.append(gridArray[i][k][j][l][0])
     print(gridArray1D)
-    open("Sudoku_Grid_Completed_2.csv", "x")
-    with open("Sudoku_Grid_Completed_2.csv", "w", newline='') as completedGridFile:
-        toWrite = csv.writer(completedGridFile, delimiter='')
+    gridArray2D = []
+    for i in range(squareSize*squareSize):
+        tempArray = []
+        for j in range(squareSize*squareSize):
+            tempArray.append(gridArray1D[9*i+j])
+        gridArray2D.append(tempArray)
+    print(gridArray2D)
+        
+    try:
+        open("Sudoku_Grid_Completed_2.csv", "x")
+        with open("Sudoku_Grid_Completed_2.csv", "w", newline='') as completedGridFile:
+            toWrite = csv.writer(completedGridFile, delimiter='')
+    except FileExistsError:
+        pass
+    
         
     
 
