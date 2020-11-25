@@ -3,7 +3,7 @@
 import csv
 
 def formatSudokuGrid():    # function to turn the 2D csv grid into a 5D array
-    with open ("Sudoku_Grid_2.csv","r") as sudokuGrid:    # opens the csv file in read mode and converts into a 2D array
+    with open ("Sudoku_Grid.csv","r") as sudokuGrid:    # opens the csv file in read mode and converts into a 2D array
         gridArray2D = list(csv.reader(sudokuGrid))
     squareSize = int(len(gridArray2D[0])**0.5)    # finds the size of the squares, so not limited by a 3x3 grid
     gridArray4D = []
@@ -145,9 +145,12 @@ def writeCompletedGridToCSV(gridArray, squareSize):
     print(gridArray2D)
         
     try:
-        open("Sudoku_Grid_Completed_2.csv", "x")
-        with open("Sudoku_Grid_Completed_2.csv", "w", newline='') as completedGridFile:
-            toWrite = csv.writer(completedGridFile, delimiter='')
+        open("Sudoku_Grid_Completed.csv", "x")
+        with open("Sudoku_Grid_Completed.csv", "w", newline='') as completedGridFile:
+            toWrite = csv.writer(completedGridFile, delimiter=',')
+            for row in gridArray2D:
+                toWrite.writerow(row)
+                
     except FileExistsError:
         pass
     
