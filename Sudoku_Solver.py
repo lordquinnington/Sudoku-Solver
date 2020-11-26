@@ -3,7 +3,7 @@
 import csv
 
 def formatSudokuGrid():    # function to turn the 2D csv grid into a 5D array
-    with open ("Sudoku_Grid_3.csv","r") as sudokuGrid:    # opens the csv file in read mode and converts into a 2D array
+    with open ("Sudoku_Grid.csv","r") as sudokuGrid:    # opens the csv file in read mode and converts into a 2D array
         gridArray2D = list(csv.reader(sudokuGrid))
     squareSize = int(len(gridArray2D[0])**0.5)    # finds the size of the squares, so not limited by a 3x3 grid
     gridArray4D = []
@@ -15,21 +15,14 @@ def formatSudokuGrid():    # function to turn the 2D csv grid into a 5D array
                 tempArray3 = []
                 for l in range(squareSize):
                     tempArray4 = [gridArray2D[3*i+k][3*j+l]]    # adds each number from the 2D array to the 5D array
+                    if tempArray4[0] == '0':
+                        for m in range(squareSize*squareSize):
+                            tempArray4.append(str(m+1))    # adds a list of the possible numbers to each blank grid (before removing them)
                     tempArray3.append(tempArray4)
                 tempArray2.append(tempArray3)
             tempArray1.append(tempArray2)
         gridArray4D.append(tempArray1)    # those arrays are then appended onto each other till a 5D array is formed                
     return gridArray4D, squareSize
-
-def formatToAddAllNumbers(gridArray, squareSize):    # function to add all possible numbers to each blank position
-    for i in range(squareSize):
-        for j in range(squareSize):
-            for k in range(squareSize):
-                for l in range(squareSize):
-                    if gridArray[i][j][k][l][0] == '0':
-                        for m in range(squareSize*squareSize):
-                            gridArray[i][j][k][l].append(str(m+1))    # adds the numbers 1 to 9 to each blank position
-    return gridArray    # another function will go through and remove any invalid numbers later
 
 def checkForCompletedSquare(gridArray,squareSize,a,b,c,d):    # function to check if the given large square is completed
     total = 0
@@ -145,8 +138,8 @@ def formatTo2DArray(gridArray, squareSize):
 
 def writeCompletedGridToCSV(gridArray2D, squareSize):      
     try:
-        open("Sudoku_Grid_Completed_3.csv", "x")
-        with open("Sudoku_Grid_Completed_3.csv", "w", newline='') as completedGridFile:
+        open("Sudoku_Grid_Completed.csv", "x")
+        with open("Sudoku_Grid_Completed.csv", "w", newline='') as completedGridFile:
             toWrite = csv.writer(completedGridFile, delimiter=',')
             for row in gridArray2D:
                 toWrite.writerow(row)
@@ -155,7 +148,6 @@ def writeCompletedGridToCSV(gridArray2D, squareSize):
         pass
 
 gridArray, squareSize = formatSudokuGrid()
-gridArary = formatToAddAllNumbers(gridArray, squareSize)
 
 finished = checkGridIsCompleted(gridArray,squareSize)
 
@@ -176,6 +168,7 @@ gridArray2D = formatTo2DArray(gridArray, squareSize)
 writeCompletedGridToCSV(gridArray2D, squareSize)
 # write something to guess at the solution
 # change what it sums to 9+8+7+6 etc not just 45
+# perhaps try merge the completedsquare and find numbers in completed square functions
 
 
 
