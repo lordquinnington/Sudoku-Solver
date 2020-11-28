@@ -1,9 +1,9 @@
 #~~~~ Sudoku Solver ~~~~#
 
-import csv, copy
+import csv
 
 def formatSudokuGrid():    # function to turn the 2D csv grid into a 5D array
-    with open ("Sudoku_Grid_4.csv","r") as sudokuGrid:    # opens the csv file in read mode and converts into a 2D array
+    with open ("Sudoku_Grid.csv","r") as sudokuGrid:    # opens the csv file in read mode and converts into a 2D array
         gridArray2D = list(csv.reader(sudokuGrid))
     squareSize = int(len(gridArray2D[0])**0.5)    # finds the size of the squares, so not limited by a 3x3 grid
     gridArray4D = []
@@ -126,53 +126,6 @@ def eliminateNotPossibleNumbers(gridArray,squareSize,a,b,c,d):
                     except ValueError:
                         pass
     return gridArray
-
-def guess(gridArray, squareSize):
-    # find the position with the least possible numbers
-    '''# if only 2 possible numbers, for instance, make 2 seperate grids with each of those numbers in'''
-    '''# then use the solve function twice for each of the 2 grids until one is found to be correct'''
-    '''# maybe add a try/except for a recursion error and state that the grid is impossible to solve?'''
-    leastPossibleNums = 9
-    leastPossibleNumsPos = []
-    for i in range(squareSize):
-        for j in range(squareSize):
-            for k in range(squareSize):
-                for l in range(squareSize):
-                    if gridArray[i][j][k][l][0] == '0': 
-                        if len(gridArray[i][j][k][l]) < leastPossibleNums:
-                            leastPossibleNums = len(gridArray[i][j][k][l])
-                            leastPossibleNumsPos = [i,j,k,l]
-    leastPossibleNums -= 1
-    print(leastPossibleNums)#
-    print(leastPossibleNumsPos)#
-    print(gridArray[leastPossibleNumsPos[0]][leastPossibleNumsPos[1]][leastPossibleNumsPos[2]][leastPossibleNumsPos[3]])#
-    a = leastPossibleNumsPos[0]
-    b = leastPossibleNumsPos[1]
-    c = leastPossibleNumsPos[2]
-    d = leastPossibleNumsPos[3]
-    if leastPossibleNums == 2:
-        gridArray1 = copy.deepcopy(gridArray)    # perhaps try find a quicker way, such as storing the value being removed but append it but that might not work
-        gridArray2 = copy.deepcopy(gridArray)
-        print(gridArray1)#
-        print(gridArray1[a][b][c][d])#
-        print(gridArray2)#
-        gridArray1[a][b][c][d].remove(gridArray1[a][b][c][d][1])
-        gridArray1[a][b][c][d].remove('0')
-        print(gridArray2)
-        print(gridArray2[a][b][c][d])#
-        gridArray2[a][b][c][d].remove(gridArray2[a][b][c][d][2])
-        gridArray2[a][b][c][d].remove('0')
-        print(gridArray1)
-        print(gridArray2)
-        input("press enter to continue")
-        try:
-            return solve(gridArray1, squareSize)
-        except RecursionError:
-            try:
-                return solve(gridArray2, squareSize)
-            except RecursionError:
-                print("grid unsolvable")
-    
     
 def formatTo2DArray(gridArray, squareSize):
     gridArray1D = []
@@ -191,8 +144,8 @@ def formatTo2DArray(gridArray, squareSize):
 
 def writeCompletedGridToCSV(gridArray2D, squareSize):      
     try:
-        open("Sudoku_Grid_Completed_4.csv", "x")
-        with open("Sudoku_Grid_Completed_4.csv", "w", newline='') as completedGridFile:
+        open("Sudoku_Grid_Completed.csv", "x")
+        with open("Sudoku_Grid_Completed.csv", "w", newline='') as completedGridFile:
             toWrite = csv.writer(completedGridFile, delimiter=',')
             for row in gridArray2D:
                 toWrite.writerow(row)
@@ -202,22 +155,19 @@ def writeCompletedGridToCSV(gridArray2D, squareSize):
 
 def solve(gridArray, squareSize):
     finished = checkGridIsCompleted(gridArray,squareSize)
-    attempts = 0
     while not finished:
-        #print(gridArray)
-        #input("enter to continue")
         for i in range(squareSize):
             for j in range(squareSize):
                 for k in range(squareSize):
                     for l in range(squareSize):
                         gridArray = eliminateNotPossibleNumbers(gridArray,squareSize,i,j,k,l)
-        attempts += 1
-        if attempts > 15: # change to 15 or something ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-            return guess(gridArray, squareSize)
         finished = checkGridIsCompleted(gridArray,squareSize)
+    return gridArray
 
 gridArray, squareSize = formatSudokuGrid()
-solve(gridArray, squareSize)
+print(gridArray)
+input("press enter to solve")
+gridArray = solve(gridArray, squareSize)
 
 print("finished:")
 print(gridArray)
@@ -225,5 +175,4 @@ print(gridArray)
 gridArray2D = formatTo2DArray(gridArray, squareSize)
 writeCompletedGridToCSV(gridArray2D, squareSize)
 
-# write something to guess at the solution
-# comment it    
+# comment it  
