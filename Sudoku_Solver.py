@@ -24,30 +24,33 @@ def formatSudokuGrid():    # function to turn the 2D csv grid into a 5D array
         gridArray4D.append(tempArray1)    # those arrays are then appended onto each other till a 5D array is formed                
     return gridArray4D, squareSize
 
-def checkForCompletedSquare(gridArray,squareSize,a,b,c,d):    # function to check if the given large square is completed
+def toSumUpTo(squareSize):
+    return (((squareSize*squareSize)**2)+squareSize*squareSize)//2
+
+def checkForCompletedSquare(gridArray,squareSize,toSumTo,a,b,c,d):    # function to check if the given large square is completed
     total = 0
     for i in range(squareSize):
         for j in range(squareSize):
             total += int(gridArray[a][b][i][j][0])    # adds each number in the square to running total
-    if total == 45:    # the sum of all the sudoku numbers is 45, so uf the sum is that then it must be completed
+    if total == toSumTo:    # the sum of all the sudoku numbers is 45, so uf the sum is that then it must be completed
         return True
     return False    # returns false if not
 
-def checkForCompletedRow(gridArray,squareSize,a,b,c,d):    # function to find if the row of the given coordinate is completed (pass in 1st and 3rd coordinate as parameters)
+def checkForCompletedRow(gridArray,squareSize,toSumTo,a,b,c,d):    # function to find if the row of the given coordinate is completed (pass in 1st and 3rd coordinate as parameters)
     total = 0
     for i in range(squareSize):
         for j in range(squareSize):
             total += int(gridArray[a][i][c][j][0])    # finds the sum of all the numbers 
-    if total == 45:    # the sum of all the possible numbers is 45 so returns true if it is that
+    if total == toSumTo:    # the sum of all the possible numbers is 45 so returns true if it is that
         return True
     return False    # returns false if not completed
 
-def checkForCompletedColumn(gridArray,squareSize,a,b,c,d):     # function to find if the column of the given coordinate is comppleted (pass in 2nd and 4th coordinate as parameters)
+def checkForCompletedColumn(gridArray,squareSize,toSumTo,a,b,c,d):     # function to find if the column of the given coordinate is comppleted (pass in 2nd and 4th coordinate as parameters)
     total = 0
     for i in range(squareSize):
         for j in range(squareSize):
             total += int(gridArray[i][b][j][d][0])    # finds the sum of all the numbers in the column
-    if total == 45:
+    if total == toSumTo:
         return True    # returns true if all the numbers are present
     return False
 
@@ -58,22 +61,25 @@ def checkGridIsCompleted(gridArray, squareSize):    # function to check if all t
                 for l in range(squareSize):
                     if gridArray[i][j][k][l][0] == '0':     # checks each space for a zero, which would indicate if it's been solved or not
                         return False
+                    
+    toSumTo = toSumUpTo(squareSize)
+    
     gridsCorrect = 0
     for i in range(squareSize):
         for j in range(squareSize):
-            correctGrid = checkForCompletedSquare(gridArray,squareSize,i,j,None,None)    # uses the other function to check if each grid is valid
+            correctGrid = checkForCompletedSquare(gridArray,squareSize,toSumTo,i,j,None,None)    # uses the other function to check if each grid is valid
             if correctGrid == True:
                 gridsCorrect += 1    # adds one if the grid is returned as true
     rowsCorrect = 0
     for i in range(squareSize):
         for j in range(squareSize):
-            correctRow = checkForCompletedRow(gridArray,squareSize,i,None,j,None)    # could combine all the checking into 1 <<<<<<<<<<<<< read pls ###########
+            correctRow = checkForCompletedRow(gridArray,squareSize,toSumTo,i,None,j,None)    # could combine all the checking into 1 <<<<<<<<<<<<< read pls ###########
             if correctRow == True:
                 rowsCorrect += 1
     columnsCorrect = 0
     for i in range(squareSize):
         for j in range(squareSize):
-            correctColumn = checkForCompletedColumn(gridArray,squareSize,None,i,None,j)
+            correctColumn = checkForCompletedColumn(gridArray,squareSize,toSumTo,None,i,None,j)
             if correctColumn == True:
                 columnsCorrect += 1
     if gridsCorrect and rowsCorrect and columnsCorrect == squareSize*squareSize:
@@ -150,6 +156,8 @@ def writeCompletedGridToCSV(gridArray2D, squareSize):
 gridArray, squareSize = formatSudokuGrid()
 
 finished = checkGridIsCompleted(gridArray,squareSize)
+print(gridArray)
+attempts = 0
 
 while not finished:
     print(gridArray)
@@ -159,16 +167,18 @@ while not finished:
             for k in range(squareSize):
                 for l in range(squareSize):
                     gridArray = eliminateNotPossibleNumbers(gridArray,squareSize,i,j,k,l)
+    attempts += 1
+##    if attempts > 15:
+##        guess(gridArray, squareSize)
     finished = checkGridIsCompleted(gridArray,squareSize)
 
+print("finished:")
 print(gridArray)
-print("finished")
-
+print(attempts)
 gridArray2D = formatTo2DArray(gridArray, squareSize)
 writeCompletedGridToCSV(gridArray2D, squareSize)
 # write something to guess at the solution
-# change what it sums to 9+8+7+6 etc not just 45
-# perhaps try merge the completedsquare and find numbers in completed square functions
+# comment it
 
 
 
