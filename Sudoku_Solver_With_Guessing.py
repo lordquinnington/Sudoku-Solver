@@ -129,6 +129,7 @@ def eliminateNotPossibleNumbers(gridArray,squareSize,a,b,c,d):
 
 def guess(gridArray, squareSize):
     '''add something to catch for incorrect grids and try the other one'''
+    '''make it so it's not limited by only having 2 options'''
     leastPossibleNums = 9
     leastPossibleNumsPos = []
     for i in range(squareSize):
@@ -165,7 +166,6 @@ def guess(gridArray, squareSize):
                 return solve(gridArray1, squareSize)#solve(gridArray2, squareSize)
             except RecursionError:
                 print("grid unsolvable")
-    
     
 def formatTo2DArray(gridArray, squareSize):
     gridArray1D = []
@@ -205,12 +205,9 @@ def solve(gridArray, squareSize):
         attempts += 1
         if attempts > 15: 
             gridArray = guess(gridArray,squareSize)
-            try:
-                finished = checkGridIsCompleted(gridArray,squareSize)
-            except TypeError:
-                return gridArray
         finished = checkGridIsCompleted(gridArray,squareSize)
     return gridArray
+
 gridArray, squareSize = formatSudokuGrid()
 print(gridArray)
 input("press enter to solve")
@@ -225,4 +222,6 @@ gridArray2D = formatTo2DArray(gridArray, squareSize)
 writeCompletedGridToCSV(gridArray2D, squareSize)
 
 # write something to guess at the solution
-# comment it    
+# comment it
+# use it to work backwards to make a puzzle
+# add a GUI
