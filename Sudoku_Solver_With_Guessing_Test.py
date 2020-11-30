@@ -150,15 +150,11 @@ def guess(gridArray, squareSize):
     c = leastPossibleNumsPos[2]
     d = leastPossibleNumsPos[3]
 
-    print(gridArray[a][b][c][d])#
-
     gridArray[a][b][c][d].remove('0')
     possibleGridsArray = []
     
     for i in range(leastPossibleNums):
         x = gridArray[a][b][c][d][i]
-        print(x)#
-        print(gridArray[a][b][c][d][i])
         gridArray[a][b][c][d].remove(gridArray[a][b][c][d][i])
         y = copy.deepcopy(gridArray)
         possibleGridsArray.append(y)
