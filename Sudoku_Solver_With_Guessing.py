@@ -143,29 +143,24 @@ def guess(gridArray, squareSize):
 
     leastPossibleNums -= 1
     if leastPossibleNums == 8:
-        return gridArray
+        return None, None
 
-    if leastPossibleNums == 2:
-        gridArray1 = copy.deepcopy(gridArray)    # perhaps try find a quicker way, such as storing the value being removed but append it but that might not work
-        gridArray2 = copy.deepcopy(gridArray)
-        try:
-            a = leastPossibleNumsPos[0]
-            b = leastPossibleNumsPos[1]
-            c = leastPossibleNumsPos[2]
-            d = leastPossibleNumsPos[3]
-            gridArray1[a][b][c][d].remove(gridArray1[a][b][c][d][1])
-            gridArray1[a][b][c][d].remove('0')
-            gridArray2[a][b][c][d].remove(gridArray2[a][b][c][d][2])
-            gridArray2[a][b][c][d].remove('0')
-        except IndexError:
-            return gridArray
-        try:
-            return solve(gridArray2, squareSize)#solve(gridArray1, squareSize)
-        except RecursionError:
-            try:
-                return solve(gridArray1, squareSize)#solve(gridArray2, squareSize)
-            except RecursionError:
-                print("grid unsolvable")
+    a = leastPossibleNumsPos[0]
+    b = leastPossibleNumsPos[1]
+    c = leastPossibleNumsPos[2]
+    d = leastPossibleNumsPos[3]
+
+    gridArray[a][b][c][d].remove('0')
+    possibleGridsArray = []
+    
+    for i in range(leastPossibleNums):
+        x = gridArray[a][b][c][d][i]
+        gridArray[a][b][c][d].remove(gridArray[a][b][c][d][i])
+        y = copy.deepcopy(gridArray)
+        possibleGridsArray.append(y)
+        gridArray[a][b][c][d].insert(i,x)
+        
+    return possibleGridsArray, leastPossibleNums
     
 def formatTo2DArray(gridArray, squareSize):
     gridArray1D = []
@@ -204,7 +199,13 @@ def solve(gridArray, squareSize):
                         gridArray = eliminateNotPossibleNumbers(gridArray,squareSize,i,j,k,l)
         attempts += 1
         if attempts > 15: 
-            gridArray = guess(gridArray,squareSize)
+            if attempts == 16:
+                possibleGridsArray, leastPossibleNums = guess(gridArray, squareSize)
+                gridArray = possibleGridsArray[0]
+            if attempts == 30:
+                gridArray = possibleGridsArray[1]
+            if attempts == 45:
+                return None
         finished = checkGridIsCompleted(gridArray,squareSize)
     return gridArray
 
@@ -218,10 +219,14 @@ finishTime = time.time()
 print("finished (in "+str(round(finishTime-startTime, 3))+"s):")
 print(gridArray)
 
-gridArray2D = formatTo2DArray(gridArray, squareSize)
-writeCompletedGridToCSV(gridArray2D, squareSize)
+try:
+    gridArray2D = formatTo2DArray(gridArray, squareSize)
+    writeCompletedGridToCSV(gridArray2D, squareSize)
+except TypeError:
+    print("grid unsolvable")
 
-# write something to guess at the solution
-# comment it
-# use it to work backwards to make a puzzle
-# add a GUI
+
+'''write something to guess at the solution'''
+'''comment it'''
+'''use it to work backwards to make a puzzle'''
+'''add a GUI'''
