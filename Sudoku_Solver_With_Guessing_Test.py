@@ -139,11 +139,20 @@ def findNumbersInSquare(gridArray,squareSize,a,b,c,d):
                 numbersInSquare.append(gridArray[a][b][i][j][0])
     return numbersInSquare
 
-def eliminateNotPossibleNumbers(gridArray,squareSize,a,b,c,d):
+def findNumbersToRemove(gridArray,squareSize,a,b,c,d):
     numbersToRemove = []
     numbersToRemove.append(findNumbersInSquare(gridArray,squareSize,a,b,None,None))
     numbersToRemove.append(findNumbersInRow(gridArray,squareSize,a,None,c,None))
     numbersToRemove.append(findNumbersInColumn(gridArray,squareSize,None,b,None,d))
+    return numbersToRemove
+
+def eliminateNotPossibleNumbers(gridArray,squareSize,a,b,c,d):
+    #numbersToRemove = []
+    #numbersToRemove.append(findNumbersInSquare(gridArray,squareSize,a,b,None,None))
+    #numbersToRemove.append(findNumbersInRow(gridArray,squareSize,a,None,c,None))
+    #numbersToRemove.append(findNumbersInColumn(gridArray,squareSize,None,b,None,d))
+    numbersToRemove = findNumbersToRemove(gridArray,squareSize,a,b,c,d)
+    
     for i in range(squareSize):
         for j in range(len(numbersToRemove[i])):
             if gridArray[a][b][c][d][0] == '0':
@@ -177,7 +186,7 @@ def findPossibleGridArrays(gridArray, squareSize):
                             leastPossibleNumsPos = [i,j,k,l]
 
     leastPossibleNums -= 1
-    print(leastPossibleNums)#
+    #print(leastPossibleNums)#
     if leastPossibleNums == 8:
         return None, None
 
@@ -200,14 +209,25 @@ def findPossibleGridArrays(gridArray, squareSize):
 
 def guess(gridArray,squareSize):
     possibleGridsArray, leastPossibleNums = findPossibleGridArrays(gridArray,squareSize)
-
     for i in range(leastPossibleNums):
-        potentialGridArray = possibleGridsArray[i+1]
-        potentialGridArray = solve(potentialGridArray,squareSize)
-        print(potentialGridArray, "\n", gridArray)#
-        if potentialGridArray != gridArray:    ### you can still eliminate numbers even if you pick the wrong answer so get it to check it through to the end ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-            return potentialGridArray
+        finished = False
+        while not finished:
+            gridArray = solve(possibleGridsArray[i],squareSize)
+            finished, counter = checkGridIsCompleted(gridArray,squareSize)
+            if counter == 81:
+                if finished == True:
+                    return gridArray
+                else:
+                    finished = True
     return None
+
+##    for i in range(leastPossibleNums):
+##        potentialGridArray = possibleGridsArray[i+1]
+##        potentialGridArray = solve(potentialGridArray,squareSize)
+##        print(potentialGridArray, "\n", gridArray)#
+##        if potentialGridArray != gridArray:    ### you can still eliminate numbers even if you pick the wrong answer so get it to check it through to the end ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+##            return potentialGridArray
+    #return None
     
 
 ##def solve(gridArray, squareSize):
@@ -257,6 +277,8 @@ while not finished:
         #if gridArray == None:
         #    print("grid unsolvable")
         #potentialGridsArray, leastPossibleNums = findPossibleGridArrays(gridArray,squareSize)
+        gridArray = guess(gridArray,squareSize)
+        
     finished, gridSize = checkGridIsCompleted(gridArray,squareSize)
     
 finishTime = time.time()
