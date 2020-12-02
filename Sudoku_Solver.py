@@ -231,7 +231,6 @@ print(gridArray)
 gridArray2D = formatTo2DArray(gridArray, squareSize)    # formats the grid back into human readable form
 writeCompletedGridToCSV(gridArray2D, squareSize)
 
-'''comment it'''
 '''use it to work backwards to make a puzzle'''
 '''add a GUI'''
 '''see if it can get to solve harder grids'''
