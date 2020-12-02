@@ -24,6 +24,33 @@ def formatSudokuGrid():    # function to turn the 2D csv grid into a 5D array
         gridArray4D.append(tempArray1)    # those arrays are then appended onto each other till a 5D array is formed                
     return gridArray4D, squareSize
 
+def formatTo2DArray(gridArray, squareSize):
+    gridArray1D = []
+    for i in range(squareSize):
+        for j in range(squareSize):
+            for k in range(squareSize):
+                for l in range(squareSize):
+                    gridArray1D.append(gridArray[i][k][j][l][0])
+    gridArray2D = []
+    for i in range(squareSize*squareSize):
+        tempArray = []
+        for j in range(squareSize*squareSize):
+            tempArray.append(gridArray1D[9*i+j])
+        gridArray2D.append(tempArray)
+    return gridArray2D
+
+def writeCompletedGridToCSV(gridArray2D, squareSize):      
+    try:
+        open("Sudoku_Grid_Completed_4.csv", "x")
+        with open("Sudoku_Grid_Completed_4.csv", "w", newline='') as completedGridFile:
+            toWrite = csv.writer(completedGridFile, delimiter=',')
+            for row in gridArray2D:
+                toWrite.writerow(row)
+                
+    except FileExistsError:
+        print("file already exists")
+        pass
+
 def toSumUpTo(squareSize):
     return (((squareSize*squareSize)**2)+squareSize*squareSize)//2
 
@@ -55,12 +82,14 @@ def checkForCompletedColumn(gridArray,squareSize,toSumTo,a,b,c,d):     # functio
     return False
 
 def checkGridIsCompleted(gridArray, squareSize):    # function to check if all the squares in the grid are filled in (correct or not is decided later)
+    counter = 0
     for i in range(squareSize):
         for j in range(squareSize):
             for k in range(squareSize):
                 for l in range(squareSize):
+                    counter += len(gridArray[i][j][k][l])
                     if gridArray[i][j][k][l][0] == '0':     # checks each space for a zero, which would indicate if it's been solved or not
-                        return False
+                        return False, counter
                     
     toSumTo = toSumUpTo(squareSize)
     
@@ -83,8 +112,8 @@ def checkGridIsCompleted(gridArray, squareSize):    # function to check if all t
             if correctColumn == True:
                 columnsCorrect += 1
     if gridsCorrect and rowsCorrect and columnsCorrect == squareSize*squareSize:
-        return True    # if the number of grids and rows and columns correct is equal to the squareSize squared, the grid is deemed to be correct
-    return False
+        return True, counter    # if the number of grids and rows and columns correct is equal to the squareSize squared, the grid is deemed to be correct
+    return False, counter
 
 def findNumbersInRow(gridArray,squareSize,a,b,c,d):
     numbersInRow = []
@@ -135,6 +164,7 @@ def findPossibleGridArrays(gridArray, squareSize):
     '''to guess, it could run the solve function on both the grids and see which one can be eliminated'''
     '''basically rewrite it, especially the solve bit'''
     '''make it so it's not limited by only having 2 options'''
+    '''check for a full grid somewhere maybe'''
     leastPossibleNums = 9
     leastPossibleNumsPos = []
     for i in range(squareSize):
@@ -176,36 +206,9 @@ def guess(gridArray,squareSize):
         potentialGridArray = solve(potentialGridArray,squareSize)
         print(potentialGridArray, "\n", gridArray)#
         if potentialGridArray != gridArray:    ### you can still eliminate numbers even if you pick the wrong answer so get it to check it through to the end ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-            return potentialGridArray, 0
-    return None, None
+            return potentialGridArray
+    return None
     
-    
-def formatTo2DArray(gridArray, squareSize):
-    gridArray1D = []
-    for i in range(squareSize):
-        for j in range(squareSize):
-            for k in range(squareSize):
-                for l in range(squareSize):
-                    gridArray1D.append(gridArray[i][k][j][l][0])
-    gridArray2D = []
-    for i in range(squareSize*squareSize):
-        tempArray = []
-        for j in range(squareSize*squareSize):
-            tempArray.append(gridArray1D[9*i+j])
-        gridArray2D.append(tempArray)
-    return gridArray2D
-
-def writeCompletedGridToCSV(gridArray2D, squareSize):      
-    try:
-        open("Sudoku_Grid_Completed_4.csv", "x")
-        with open("Sudoku_Grid_Completed_4.csv", "w", newline='') as completedGridFile:
-            toWrite = csv.writer(completedGridFile, delimiter=',')
-            for row in gridArray2D:
-                toWrite.writerow(row)
-                
-    except FileExistsError:
-        print("file already exists")
-        pass
 
 ##def solve(gridArray, squareSize):
 ##    finished = checkGridIsCompleted(gridArray,squareSize)
@@ -243,18 +246,18 @@ print(gridArray)
 input("press enter to solve")
 startTime = time.time()
 
-finished = checkGridIsCompleted(gridArray,squareSize)
-attempts = 0
+finished, gridSize = checkGridIsCompleted(gridArray,squareSize)
 
 while not finished:
+    previousGridArray = copy.deepcopy(gridArray)
     gridArray = solve(gridArray, squareSize)
-    attempts += 1
-    if attempts == 15:
-        print(gridArray)#
-        gridArray, attempts = guess(gridArray,squareSize)
-        if gridArray == None:
-            print("grid unsolvable")
-    finished = checkGridIsCompleted(gridArray,squareSize)
+    if gridArray == previousGridArray:
+        #print(gridArray)#
+        #gridArray = guess(gridArray,squareSize)
+        #if gridArray == None:
+        #    print("grid unsolvable")
+        #potentialGridsArray, leastPossibleNums = findPossibleGridArrays(gridArray,squareSize)
+    finished, gridSize = checkGridIsCompleted(gridArray,squareSize)
     
 finishTime = time.time()
 
