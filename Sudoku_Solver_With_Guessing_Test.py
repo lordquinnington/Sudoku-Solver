@@ -2,8 +2,10 @@
 
 import csv, copy, time
 
+################################################ formatting functions ################################################
+
 def formatSudokuGrid():    # function to turn the 2D csv grid into a 5D array
-    with open ("Sudoku_Grid_4.csv","r") as sudokuGrid:    # opens the csv file in read mode and converts into a 2D array
+    with open ("Sudoku_Grid_6.csv","r") as sudokuGrid:    # opens the csv file in read mode and converts into a 2D array
         gridArray2D = list(csv.reader(sudokuGrid))
     squareSize = int(len(gridArray2D[0])**0.5)    # finds the size of the squares, so not limited by a 3x3 grid
     gridArray4D = []
@@ -24,35 +26,36 @@ def formatSudokuGrid():    # function to turn the 2D csv grid into a 5D array
         gridArray4D.append(tempArray1)    # those arrays are then appended onto each other till a 5D array is formed                
     return gridArray4D, squareSize
 
-def formatTo2DArray(gridArray, squareSize):
+def formatTo2DArray(gridArray, squareSize):    # function to turn the 5D array back into a 2D array to be more human readable
     gridArray1D = []
     for i in range(squareSize):
         for j in range(squareSize):
             for k in range(squareSize):
                 for l in range(squareSize):
-                    gridArray1D.append(gridArray[i][k][j][l][0])
-    gridArray2D = []
+                    gridArray1D.append(gridArray[i][k][j][l][0])    # appends all the values in the 5D array initially to a 1D array
+    gridArray2D = []    # i couldn't get it to go straight from a 5D to a 2D array so it had to be converted into a 1D array first then converted to a 2D array
     for i in range(squareSize*squareSize):
         tempArray = []
         for j in range(squareSize*squareSize):
-            tempArray.append(gridArray1D[9*i+j])
+            tempArray.append(gridArray1D[9*i+j])    # forms the 2D array
         gridArray2D.append(tempArray)
     return gridArray2D
 
-def writeCompletedGridToCSV(gridArray2D, squareSize):      
-    try:
-        open("Sudoku_Grid_Completed_4.csv", "x")
-        with open("Sudoku_Grid_Completed_4.csv", "w", newline='') as completedGridFile:
+def writeCompletedGridToCSV(gridArray2D, squareSize):     # function to write the completed grid back to a csv file to be more readable and checkable  
+    try:    # tries to creat a file for the completed grid
+        open("Sudoku_Grid_Completed_6.csv", "x")
+        with open("Sudoku_Grid_Completed_6.csv", "w", newline='') as completedGridFile:
             toWrite = csv.writer(completedGridFile, delimiter=',')
             for row in gridArray2D:
-                toWrite.writerow(row)
-                
-    except FileExistsError:
+                toWrite.writerow(row)   # writes the contents of the 2D array to the text file        
+    except FileExistsError:    # if the file already exists, the program assumes the correct answer is already in there so skips it
         print("file already exists")
         pass
 
-def toSumUpTo(squareSize):
-    return (((squareSize*squareSize)**2)+squareSize*squareSize)//2
+################################################ searching functions ################################################
+
+def toSumUpTo(squareSize):    # function to find what each of the rows/columns/grids should sum up to
+    return (((squareSize*squareSize)**2)+squareSize*squareSize)//2   # utilises that mathsy trick thing instead of recursion
 
 def checkForCompletedSquare(gridArray,squareSize,toSumTo,a,b,c,d):    # function to check if the given large square is completed
     total = 0
@@ -63,7 +66,7 @@ def checkForCompletedSquare(gridArray,squareSize,toSumTo,a,b,c,d):    # function
         return True
     return False    # returns false if not
 
-def checkForCompletedRow(gridArray,squareSize,toSumTo,a,b,c,d):    # function to find if the row of the given coordinate is completed (pass in 1st and 3rd coordinate as parameters)
+def checkForCompletedRow(gridArray,squareSize,toSumTo,a,b,c,d):    # function to find if the row of the given coordinate is completed
     total = 0
     for i in range(squareSize):
         for j in range(squareSize):
@@ -72,7 +75,7 @@ def checkForCompletedRow(gridArray,squareSize,toSumTo,a,b,c,d):    # function to
         return True
     return False    # returns false if not completed
 
-def checkForCompletedColumn(gridArray,squareSize,toSumTo,a,b,c,d):     # function to find if the column of the given coordinate is comppleted (pass in 2nd and 4th coordinate as parameters)
+def checkForCompletedColumn(gridArray,squareSize,toSumTo,a,b,c,d):     # function to find if the column of the given coordinate is comppleted
     total = 0
     for i in range(squareSize):
         for j in range(squareSize):
@@ -81,99 +84,82 @@ def checkForCompletedColumn(gridArray,squareSize,toSumTo,a,b,c,d):     # functio
         return True    # returns true if all the numbers are present
     return False
 
-def checkGridIsCompleted(gridArray, squareSize):    # function to check if all the squares in the grid are filled in (correct or not is decided later)
+def checkGridIsCompleted(gridArray, squareSize):    # function to check if all the squares in the grid are filled in
     counter = 0
     for i in range(squareSize):
         for j in range(squareSize):
             for k in range(squareSize):
                 for l in range(squareSize):
-                    counter += len(gridArray[i][j][k][l])
+                    counter += len(gridArray[i][j][k][l])    # has a counter for later (to check if the grid is full yet still returning false for being finished)
                     if gridArray[i][j][k][l][0] == '0':     # checks each space for a zero, which would indicate if it's been solved or not
-                        return False, counter
-                    
+                        return False, counter                
     toSumTo = toSumUpTo(squareSize)
-    
     gridsCorrect = 0
-    for i in range(squareSize):
-        for j in range(squareSize):
-            correctGrid = checkForCompletedSquare(gridArray,squareSize,toSumTo,i,j,None,None)    # uses the other function to check if each grid is valid
-            if correctGrid == True:
-                gridsCorrect += 1    # adds one if the grid is returned as true
     rowsCorrect = 0
-    for i in range(squareSize):
-        for j in range(squareSize):
-            correctRow = checkForCompletedRow(gridArray,squareSize,toSumTo,i,None,j,None)    # could combine all the checking into 1 <<<<<<<<<<<<< read pls ###########
-            if correctRow == True:
-                rowsCorrect += 1
     columnsCorrect = 0
     for i in range(squareSize):
-        for j in range(squareSize):
+        for j in range(squareSize):    # checks to see if all 9 rows/columns/grids are completed
+            correctGrid = checkForCompletedSquare(gridArray,squareSize,toSumTo,i,j,None,None)
+            if correctGrid == True:
+                gridsCorrect += 1
+            correctRow = checkForCompletedRow(gridArray,squareSize,toSumTo,i,None,j,None)
+            if correctRow == True:
+                rowsCorrect += 1
             correctColumn = checkForCompletedColumn(gridArray,squareSize,toSumTo,None,i,None,j)
             if correctColumn == True:
-                columnsCorrect += 1
+                columnsCorrect += 1  
     if gridsCorrect and rowsCorrect and columnsCorrect == squareSize*squareSize:
-        return True, counter    # if the number of grids and rows and columns correct is equal to the squareSize squared, the grid is deemed to be correct
+        return True, counter    # if the number of grids, rows and columns correct is equal to the squareSize squared, the grid is deemed to be correct
     return False, counter
 
-def findNumbersInRow(gridArray,squareSize,a,b,c,d):
+def findNumbersInRow(gridArray,squareSize,a,b,c,d):    # function to find which numbers are in a given row
     numbersInRow = []
     for i in range(squareSize):
         for j in range(squareSize):
             if gridArray[a][i][c][j][0] != '0':
-                numbersInRow.append(gridArray[a][i][c][j][0])
+                numbersInRow.append(gridArray[a][i][c][j][0])     # appends the value there to an array
     return numbersInRow
 
-def findNumbersInColumn(gridArray,squareSize,a,b,c,d):
+def findNumbersInColumn(gridArray,squareSize,a,b,c,d):      # function to find which numbers are in a given row
     numbersInColumn = []
     for i in range(squareSize):
         for j in range(squareSize):
             if gridArray[i][b][j][d][0] != '0':
-                numbersInColumn.append(gridArray[i][b][j][d][0])
+                numbersInColumn.append(gridArray[i][b][j][d][0])    # appends the values to an array
     return numbersInColumn
 
-def findNumbersInSquare(gridArray,squareSize,a,b,c,d):
+def findNumbersInSquare(gridArray,squareSize,a,b,c,d):    # function to find which numbers are in a given column
     numbersInSquare = []
     for i in range(squareSize):
         for j in range(squareSize):
             if gridArray[a][b][i][j][0] != '0':
-                numbersInSquare.append(gridArray[a][b][i][j][0])
+                numbersInSquare.append(gridArray[a][b][i][j][0])    # appends them to an array
     return numbersInSquare
 
-def findNumbersToRemove(gridArray,squareSize,a,b,c,d):
+def findNumbersToRemove(gridArray,squareSize,a,b,c,d):    # function to finf the numbers which can be removed as possibilities for a given square
     numbersToRemove = []
     numbersToRemove.append(findNumbersInSquare(gridArray,squareSize,a,b,None,None))
     numbersToRemove.append(findNumbersInRow(gridArray,squareSize,a,None,c,None))
     numbersToRemove.append(findNumbersInColumn(gridArray,squareSize,None,b,None,d))
     return numbersToRemove
 
-def eliminateNotPossibleNumbers(gridArray,squareSize,a,b,c,d):
-    #numbersToRemove = []
-    #numbersToRemove.append(findNumbersInSquare(gridArray,squareSize,a,b,None,None))
-    #numbersToRemove.append(findNumbersInRow(gridArray,squareSize,a,None,c,None))
-    #numbersToRemove.append(findNumbersInColumn(gridArray,squareSize,None,b,None,d))
+################################################ eliminating functions ################################################
+
+def eliminateNotPossibleNumbers(gridArray,squareSize,a,b,c,d):    # function to eliminate the numbersa square can't be
     numbersToRemove = findNumbersToRemove(gridArray,squareSize,a,b,c,d)
-    
     for i in range(squareSize):
         for j in range(len(numbersToRemove[i])):
             if gridArray[a][b][c][d][0] == '0':
                 if len(gridArray[a][b][c][d]) == 2:
-                    gridArray[a][b][c][d].remove('0')
+                    gridArray[a][b][c][d].remove('0')    # if there is only one possible number, the 0 is removed, effectively filling in the square
                 else:
                     try:
-                        gridArray[a][b][c][d].remove(numbersToRemove[i][j])
-                    except ValueError:
+                        gridArray[a][b][c][d].remove(numbersToRemove[i][j])    # tries to remove the numbers from the list to remove
+                    except ValueError:    # if it returns a value error, the possible number has already been removed so it gets ignored
                         pass
     return gridArray
 
-def findPossibleGridArrays(gridArray, squareSize):
-    '''add something to catch for incorrect grids and try the other one'''
-    '''could try adding an attempts system but seeing if the previous grid is equal to the grid after eliminating all possible numbers'''
-    '''checking if the grids are equal would prevent unnecessary attempts'''
-    '''to do that, may have to take the loop out of the solve function and put the solve function into a loop instead, returning finished'''
-    '''to guess, it could run the solve function on both the grids and see which one can be eliminated'''
-    '''basically rewrite it, especially the solve bit'''
-    '''make it so it's not limited by only having 2 options'''
-    '''check for a full grid somewhere maybe'''
+def findPossibleGridArrays(gridArray, squareSize):    # function to start guessing and returning multiple grid arrays it could be
     leastPossibleNums = 9
     leastPossibleNumsPos = []
     for i in range(squareSize):
@@ -181,119 +167,71 @@ def findPossibleGridArrays(gridArray, squareSize):
             for k in range(squareSize):
                 for l in range(squareSize):
                     if gridArray[i][j][k][l][0] == '0': 
-                        if len(gridArray[i][j][k][l]) < leastPossibleNums:
+                        if len(gridArray[i][j][k][l]) < leastPossibleNums:    # first, it finds the position with the least number of possibilities and uses that position as that will give the least amount of possible grid arrays
                             leastPossibleNums = len(gridArray[i][j][k][l])
                             leastPossibleNumsPos = [i,j,k,l]
-
     leastPossibleNums -= 1
-    #print(leastPossibleNums)#
     if leastPossibleNums == 8:
         return None, None
-
     a = leastPossibleNumsPos[0]
     b = leastPossibleNumsPos[1]
     c = leastPossibleNumsPos[2]
     d = leastPossibleNumsPos[3]
-
-    gridArray[a][b][c][d].remove('0')
+    gridArray[a][b][c][d].remove('0')    # removes the 0 as it needs to fill in numbers to guess
     possibleGridsArray = []
-    
     for i in range(leastPossibleNums):
-        x = gridArray[a][b][c][d][i]
-        gridArray[a][b][c][d].remove(gridArray[a][b][c][d][i])
-        y = copy.deepcopy(gridArray)
-        possibleGridsArray.append(y)
-        gridArray[a][b][c][d].insert(i,x)
-        
+        x = gridArray[a][b][c][d][i]    # creates a temporary copy of the value which was in there
+        gridArray[a][b][c][d].remove(gridArray[a][b][c][d][i])    # removes that value from the grid array
+        y = copy.deepcopy(gridArray)    # makes a temporary copy of the new grid array
+        possibleGridsArray.append(y)    # appends the copy to the list of possible arrays
+        gridArray[a][b][c][d].insert(i,x)     # inserts the value it removed back in so it is included next time
     return possibleGridsArray, leastPossibleNums
 
-def guess(gridArray,squareSize):
+def guess(gridArray,squareSize):    # function to tie together the guessing part of the program
     possibleGridsArray, leastPossibleNums = findPossibleGridArrays(gridArray,squareSize)
     for i in range(leastPossibleNums):
         finished = False
         while not finished:
-            gridArray = solve(possibleGridsArray[i],squareSize)
-            finished, counter = checkGridIsCompleted(gridArray,squareSize)
-            if counter == 81:
+            gridArray = solve(possibleGridsArray[i],squareSize)    # tries one grid array from the list of possibilities
+            finished, counter = checkGridIsCompleted(gridArray,squareSize)    # checks if the grid is complete
+            if counter == 81:    # this may need improving but if the grid is full but still incomplete, it will move onto the next one
                 if finished == True:
-                    return gridArray
+                    return gridArray    # returns the array if its found to be the right one
                 else:
                     finished = True
     return None
 
-##    for i in range(leastPossibleNums):
-##        potentialGridArray = possibleGridsArray[i+1]
-##        potentialGridArray = solve(potentialGridArray,squareSize)
-##        print(potentialGridArray, "\n", gridArray)#
-##        if potentialGridArray != gridArray:    ### you can still eliminate numbers even if you pick the wrong answer so get it to check it through to the end ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-##            return potentialGridArray
-    #return None
-    
-
-##def solve(gridArray, squareSize):
-##    finished = checkGridIsCompleted(gridArray,squareSize)
-##    attempts = 0
-##    while not finished:
-##        for i in range(squareSize):
-##            for j in range(squareSize):
-##                for k in range(squareSize):
-##                    for l in range(squareSize):
-##                        gridArray = eliminateNotPossibleNumbers(gridArray,squareSize,i,j,k,l)
-##        attempts += 1
-##        if attempts > 15: 
-####            if attempts == 16:
-####                possibleGridsArray = []
-####                possibleGridsArray, leastPossibleNums = findPossibleGridArrays(gridArray, squareSize, possibleGridsArray)
-####                gridArray = possibleGridsArray[0]
-####            if attempts == 30:
-####                gridArray = possibleGridsArray[1]
-####            if attempts == 45:
-####                return None
-##        finished = checkGridIsCompleted(gridArray,squareSize)
-##    return gridArray
-
-def solve(gridArray,squareSize):
+def solve(gridArray,squareSize):    # function to loop through once removing as many numbers as it can
     for i in range(squareSize):
         for j in range(squareSize):
             for k in range(squareSize):
                 for l in range(squareSize):
-                    gridArray = eliminateNotPossibleNumbers(gridArray,squareSize,i,j,k,l)
+                    gridArray = eliminateNotPossibleNumbers(gridArray,squareSize,i,j,k,l)    # removes as many numbers as it can from  the grid
     return gridArray
 
+################################################ main program ################################################
 
-gridArray, squareSize = formatSudokuGrid()
-print(gridArray)
+gridArray, squareSize = formatSudokuGrid()    # the grid is first formatted into a 5D array
+print("grid array: \n", gridArray)
 input("press enter to solve")
+
 startTime = time.time()
-
 finished, gridSize = checkGridIsCompleted(gridArray,squareSize)
-
 while not finished:
-    previousGridArray = copy.deepcopy(gridArray)
+    previousGridArray = copy.deepcopy(gridArray)    # makes a copy of the first array to use to check later
     gridArray = solve(gridArray, squareSize)
-    if gridArray == previousGridArray:
-        #print(gridArray)#
-        #gridArray = guess(gridArray,squareSize)
-        #if gridArray == None:
-        #    print("grid unsolvable")
-        #potentialGridsArray, leastPossibleNums = findPossibleGridArrays(gridArray,squareSize)
-        gridArray = guess(gridArray,squareSize)
-        
-    finished, gridSize = checkGridIsCompleted(gridArray,squareSize)
-    
-finishTime = time.time()
+    if gridArray == previousGridArray:    # sees if the previous grid is the same as the new grid, indicating no numbers can be removed, which should be better than an attempts system
+        gridArray = guess(gridArray,squareSize)        
+    finished, gridSize = checkGridIsCompleted(gridArray,squareSize)    
+finishTime = time.time()    # times how long it takes for research purposes
 
 print("finished (in "+str(round(finishTime-startTime, 3))+"s):")
 print(gridArray)
 
-try:
-    gridArray2D = formatTo2DArray(gridArray, squareSize)
-    writeCompletedGridToCSV(gridArray2D, squareSize)
-except TypeError:
-    print("grid unsolvable")
+gridArray2D = formatTo2DArray(gridArray, squareSize)    # formats the grid back into human readable form
+writeCompletedGridToCSV(gridArray2D, squareSize)
 
-
-'''write something to guess at the solution'''
 '''comment it'''
 '''use it to work backwards to make a puzzle'''
 '''add a GUI'''
+'''see if it can get to solve harder grids'''
