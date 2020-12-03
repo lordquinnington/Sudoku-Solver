@@ -189,16 +189,29 @@ def findPossibleGridArrays(gridArray, squareSize):    # function to start guessi
 
 def guess(gridArray,squareSize):    # function to tie together the guessing part of the program
     possibleGridsArray, leastPossibleNums = findPossibleGridArrays(gridArray,squareSize)
+    '''need to check if theyre not equal, and could also return an array of the most solved guesses instead of none if none are found to be solvable'''
     for i in range(leastPossibleNums):
         finished = False
+        gridArray = copy.deepcopy(possibleGridsArray[i])
         while not finished:
-            gridArray = solve(possibleGridsArray[i],squareSize)    # tries one grid array from the list of possibilities
+            #print(possibleGridsArray[i])#
+            #input("next guess")#
+            potentialGridArray = copy.deepcopy(gridArray)# NEEDS TO COPY SOMETHING WHICH ISNT THE POSITION IN ARRAY AS THAT STAYS CONSTANT SO ADD COPY OUTSIDE LOOP
+            previousGridArray = copy.deepcopy(potentialGridArray)
+            gridArray = solve(potentialGridArray,squareSize)    # tries one grid array from the list of possibilities
             finished, counter = checkGridIsCompleted(gridArray,squareSize)    # checks if the grid is complete
-            if counter == 81:    # this may need improving but if the grid is full but still incomplete, it will move onto the next one
-                if finished == True:
-                    return gridArray    # returns the array if its found to be the right one
-                else:
-                    finished = True
+            if finished == True:
+                return gridArray
+            #print("\n \n", gridArray, "\n\n", possibleGridsArray[i])#
+            if gridArray == previousGridArray:
+                #print("trying another")#
+                break
+            #print("trying again")
+            ##if counter == 81:    # this may need improving but if the grid is full but still incomplete, it will move onto the next one
+            ##    if finished == True:
+            ##        return gridArray    # returns the array if its found to be the right one
+            ##    else:
+            ##        finished = True
     return None
 
 def solve(gridArray,squareSize):    # function to loop through once removing as many numbers as it can
@@ -218,6 +231,8 @@ input("press enter to solve")
 startTime = time.time()
 finished, gridSize = checkGridIsCompleted(gridArray,squareSize)
 while not finished:
+    #print(gridArray)#
+    #input("next eliminate")#
     previousGridArray = copy.deepcopy(gridArray)    # makes a copy of the first array to use to check later
     gridArray = solve(gridArray, squareSize)
     if gridArray == previousGridArray:    # sees if the previous grid is the same as the new grid, indicating no numbers can be removed, which should be better than an attempts system
