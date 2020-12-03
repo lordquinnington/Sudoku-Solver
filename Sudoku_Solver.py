@@ -5,7 +5,7 @@ import csv, copy, time
 ################################################ formatting functions ################################################
 
 def formatSudokuGrid():    # function to turn the 2D csv grid into a 5D array
-    with open ("Sudoku_Grid_7.csv","r") as sudokuGrid:    # opens the csv file in read mode and converts into a 2D array
+    with open ("Sudoku_Grid_6.csv","r") as sudokuGrid:    # opens the csv file in read mode and converts into a 2D array
         gridArray2D = list(csv.reader(sudokuGrid))
     squareSize = int(len(gridArray2D[0])**0.5)    # finds the size of the squares, so not limited by a 3x3 grid
     gridArray4D = []
@@ -43,8 +43,8 @@ def formatTo2DArray(gridArray, squareSize):    # function to turn the 5D array b
 
 def writeCompletedGridToCSV(gridArray2D, squareSize):     # function to write the completed grid back to a csv file to be more readable and checkable  
     try:    # tries to creat a file for the completed grid
-        open("Sudoku_Grid_Completed_7.csv", "x")
-        with open("Sudoku_Grid_Completed_7.csv", "w", newline='') as completedGridFile:
+        open("Sudoku_Grid_Completed_6.csv", "x")
+        with open("Sudoku_Grid_Completed_6.csv", "w", newline='') as completedGridFile:
             toWrite = csv.writer(completedGridFile, delimiter=',')
             for row in gridArray2D:
                 toWrite.writerow(row)   # writes the contents of the 2D array to the text file        
@@ -188,8 +188,15 @@ def findPossibleGridArrays(gridArray, squareSize):    # function to start guessi
     return possibleGridsArray, leastPossibleNums
 
 def guess(gridArray,squareSize):    # function to tie together the guessing part of the program
+    #try:#
+    #    gridArray[0][0][0][0][0][0]#
+    #    possibleGridsArray = gridArray#
+    #    leastPossibleNums = len(possibleGridsArray)#
+    #except IndexError:#
+    #    possibleGridsArray, leastPossibleNums = findPossibleGridArrays(gridArray,squareSize)#
     possibleGridsArray, leastPossibleNums = findPossibleGridArrays(gridArray,squareSize)
     '''need to check if theyre not equal, and could also return an array of the most solved guesses instead of none if none are found to be solvable'''
+    moreGridArrays = []#
     for i in range(leastPossibleNums):
         finished = False
         gridArray = copy.deepcopy(possibleGridsArray[i])
@@ -201,9 +208,11 @@ def guess(gridArray,squareSize):    # function to tie together the guessing part
             if finished == True:
                 return gridArray
             if gridArray == previousGridArray:
+                #moreGridArrays.append(gridArray)#
                 break
     print("none")# get it to return an array of the most solved versions of each possibilities and then check each of those (in the functions, checking if its an array of grids or just a grid is needed)
     return None
+    #return guess(moreGridArrays,squareSize)#
 
 def solve(gridArray,squareSize):    # function to loop through once removing as many numbers as it can
     for i in range(squareSize):
@@ -230,6 +239,7 @@ while not finished:
         gridArray = guess(gridArray,squareSize)        
     finished, gridSize = checkGridIsCompleted(gridArray,squareSize)    
 finishTime = time.time()    # times how long it takes for research purposes
+
 
 print("finished (in "+str(round(finishTime-startTime, 3))+"s):")
 print(gridArray)
