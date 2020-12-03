@@ -5,7 +5,7 @@ import csv, copy, time
 ################################################ formatting functions ################################################
 
 def formatSudokuGrid():    # function to turn the 2D csv grid into a 5D array
-    with open ("Sudoku_Grid_6.csv","r") as sudokuGrid:    # opens the csv file in read mode and converts into a 2D array
+    with open ("Sudoku_Grid_7.csv","r") as sudokuGrid:    # opens the csv file in read mode and converts into a 2D array
         gridArray2D = list(csv.reader(sudokuGrid))
     squareSize = int(len(gridArray2D[0])**0.5)    # finds the size of the squares, so not limited by a 3x3 grid
     gridArray4D = []
@@ -43,8 +43,8 @@ def formatTo2DArray(gridArray, squareSize):    # function to turn the 5D array b
 
 def writeCompletedGridToCSV(gridArray2D, squareSize):     # function to write the completed grid back to a csv file to be more readable and checkable  
     try:    # tries to creat a file for the completed grid
-        open("Sudoku_Grid_Completed_6.csv", "x")
-        with open("Sudoku_Grid_Completed_6.csv", "w", newline='') as completedGridFile:
+        open("Sudoku_Grid_Completed_7.csv", "x")
+        with open("Sudoku_Grid_Completed_7.csv", "w", newline='') as completedGridFile:
             toWrite = csv.writer(completedGridFile, delimiter=',')
             for row in gridArray2D:
                 toWrite.writerow(row)   # writes the contents of the 2D array to the text file        
@@ -194,24 +194,15 @@ def guess(gridArray,squareSize):    # function to tie together the guessing part
         finished = False
         gridArray = copy.deepcopy(possibleGridsArray[i])
         while not finished:
-            #print(possibleGridsArray[i])#
-            #input("next guess")#
-            potentialGridArray = copy.deepcopy(gridArray)# NEEDS TO COPY SOMETHING WHICH ISNT THE POSITION IN ARRAY AS THAT STAYS CONSTANT SO ADD COPY OUTSIDE LOOP
+            potentialGridArray = copy.deepcopy(gridArray)
             previousGridArray = copy.deepcopy(potentialGridArray)
             gridArray = solve(potentialGridArray,squareSize)    # tries one grid array from the list of possibilities
             finished, counter = checkGridIsCompleted(gridArray,squareSize)    # checks if the grid is complete
             if finished == True:
                 return gridArray
-            #print("\n \n", gridArray, "\n\n", possibleGridsArray[i])#
             if gridArray == previousGridArray:
-                #print("trying another")#
                 break
-            #print("trying again")
-            ##if counter == 81:    # this may need improving but if the grid is full but still incomplete, it will move onto the next one
-            ##    if finished == True:
-            ##        return gridArray    # returns the array if its found to be the right one
-            ##    else:
-            ##        finished = True
+    print("none")# get it to return an array of the most solved versions of each possibilities and then check each of those (in the functions, checking if its an array of grids or just a grid is needed)
     return None
 
 def solve(gridArray,squareSize):    # function to loop through once removing as many numbers as it can
