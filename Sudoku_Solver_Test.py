@@ -226,10 +226,12 @@ def guess(possibleGridsArray,squareSize,leastPossibleNuma):
             if gridArray == previousGridArray:
                 if counter == 81:
                     possibleGridsArray.remove(possibleGridsArray[0])
-                    return guess(possibleGridsArray,squareSize,leastPossibleNums)
+                    #return guess(possibleGridsArray,squareSize,leastPossibleNums)
+                    gridArray = guess(possibleGridsArray,squareSize,leastPossibleNums)
                 possibleGridsArray.remove(possibleGridsArray[0])
                 possibleGridsArray.append(gridArray)
-                return guess(possibleGridsArray,squareSize,leastPossibleNums)     # recursion error somewhere lol
+                #return guess(possibleGridsArray,squareSize,leastPossibleNums)     # recursion error somewhere lol
+                gridArray = guess(possibleGridsArray,squareSize,leastPossibleNums)
                     
 
 def solve(gridArray,squareSize):    # function to loop through once removing as many numbers as it can
@@ -254,6 +256,7 @@ while not finished:
     previousGridArray = copy.deepcopy(gridArray)    # makes a copy of the first array to use to check later
     gridArray = solve(gridArray, squareSize)
     if gridArray == previousGridArray:    # sees if the previous grid is the same as the new grid, indicating no numbers can be removed, which should be better than an attempts system
+        print(gridArray)
         possibleGridsArray, leastPossibleNums = findPossibleGridArrays(gridArray,squareSize)
         gridArray = guess(possibleGridsArray,squareSize,leastPossibleNums)        
     finished, gridSize = checkGridIsCompleted(gridArray,squareSize)    
