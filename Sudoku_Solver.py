@@ -161,10 +161,15 @@ def solve(gridArray,squareSize):
 gridNumber = str(input("enter the grid number >"))
 gridArray, squareSize = formatSudokuGridTo5D(gridNumber)
 print(gridArray,"\n")
-gridArray = solve(gridArray,squareSize)
 
-if gridaArray != None:
+startTime = time.time()
+gridArray = solve(gridArray,squareSize)
+finishTime = time.time()
+
+if gridArray != None:
     print(gridArray)
+    print("finished in "+str(round(finishTime-startTime,3))+"s")
     formatSudokuGridTo2D(gridArray,squareSize,gridNumber)
+    print("written to file")
 else:
     print("grid unsolvable")
