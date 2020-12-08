@@ -1,6 +1,6 @@
 #~~~~ Sudoku Solver ~~~~#
 
-import csv, copy, time
+import csv, copy, time, random
 
 ################################################ formatting functions ################################################
 
@@ -157,19 +157,17 @@ def solve(gridArray,squareSize):
                 return gridAttempt
         return None
 
-    
-gridNumber = str(input("enter the grid number >"))
-gridArray, squareSize = formatSudokuGridTo5D(gridNumber)
-print(gridArray,"\n")
-
-startTime = time.time()
-gridArray = solve(gridArray,squareSize)
-finishTime = time.time()
-
-if gridArray != None:
-    print(gridArray)
-    print("finished in "+str(round(finishTime-startTime,3))+"s")
-    formatSudokuGridTo2D(gridArray,squareSize,gridNumber)
-    print("written to file")
-else:
-    print("grid unsolvable")
+def initialiseSolving():
+    gridNumber = str(input("enter the grid number >"))
+    gridArray, squareSize = formatSudokuGridTo5D(gridNumber)
+    print(gridArray,"\n")
+    startTime = time.time()
+    gridArray = solve(gridArray,squareSize)
+    finishTime = time.time()
+    if gridArray != None:
+        print(gridArray)
+        print("finished in "+str(round(finishTime-startTime,3))+"s")
+        formatSudokuGridTo2D(gridArray,squareSize,gridNumber)
+        print("written to file")
+    else:
+        print("grid unsolvable")
