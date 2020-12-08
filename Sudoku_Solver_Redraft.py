@@ -118,13 +118,13 @@ def findPossibleGrids(gridArray,squareSize):
     c = leastPossibleOptionsPos[2]
     d = leastPossibleOptionsPos[3]
     possibleGrids = []
-    for i in range(numberOfPossibleGrids-1):    #############does it only work for when the length of the smallest possibilities is 2. ANY MORE AND IT TURNS IT INTO [5, 9] ETC. find a way to remove all but 1
-        y = copy.deepcopy(gridArray)
-        print(i)
-        print(y[a][b][c][d])
-        y[a][b][c][d].remove(0)
-        y[a][b][c][d].remove(gridArray[a][b][c][d][i+1])
-        possibleGrids.append(y)
+    for i in range(numberOfPossibleGrids-1):
+        x = copy.deepcopy(gridArray)
+        x[a][b][c][d].remove(0)
+        y = x[a][b][c][d][i]
+        x[a][b][c][d].clear()
+        x[a][b][c][d].append(y)
+        possibleGrids.append(x)
     return possibleGrids, numberOfPossibleGrids-1
 
 def solve(gridArray,squareSize):
@@ -161,7 +161,10 @@ def solve(gridArray,squareSize):
 gridNumber = str(input("enter the grid number >"))
 gridArray, squareSize = formatSudokuGridTo5D(gridNumber)
 print(gridArray,"\n")
-print(solve(gridArray,squareSize))
-#formatSudokuGridTo2D(gridArray,squareSize,gridNumber)
-x = [[[[[5], [3], [4]], [[6], [7], [2]], [[1], [9], [8]]], [[[6], [7], [8]], [[1], [9], [5]], [[3], [4], [2]]], [[[9], [1], [2]], [[3], [4], [8]], [[5], [6], [7]]]], [[[[8], [0, 1, 5], [0, 5, 9]], [[4], [2], [6]], [[7], [1], [3]]], [[[7], [6], [1]], [[8], [5], [3]], [[9], [2], [4]]], [[[4], [2], [3]], [[7], [9], [1]], [[8], [5], [6]]]], [[[[9], [6], [1]], [[2], [8], [7]], [[3], [0, 4, 5], [5]]], [[[5], [3], [7]], [[4], [1], [9]], [[2], [8], [6]]], [[[2], [8], [4]], [[6], [3], [5]], [[1], [7], [9]]]]]
-x = [[[[[5], [3], [4]], [[6], [7], [2]], [[1], [9], [8]]], [[[6], [7], [8]], [[1], [9], [5]], [[3], [4], [2]]], [[[9], [1], [2]], [[3], [4], [8]], [[5], [6], [7]]]], [[[[8], [0, 1, 5, 7], [0, 5, 6, 9]], [[4], [2], [6]], [[7], [1], [3]]], [[[7], [6], [1]], [[8], [5], [3]], [[9], [2], [4]]], [[[4], [2], [3]], [[7], [9], [1]], [[8], [5], [6]]]], [[[[9], [6], [1]], [[2], [8], [7]], [[3], [0, 4, 5, 9], [5]]], [[[5], [3], [7]], [[4], [1], [9]], [[2], [8], [6]]], [[[2], [8], [4]], [[6], [3], [5]], [[1], [7], [9]]]]]
+gridArray = solve(gridArray,squareSize)
+
+if gridaArray != None:
+    print(gridArray)
+    formatSudokuGridTo2D(gridArray,squareSize,gridNumber)
+else:
+    print("grid unsolvable")
