@@ -1,6 +1,6 @@
 #~~~~ Sudoku Solver ~~~~#
 
-import csv, copy, time, random
+import csv, copy, time
 
 ################################################ formatting functions ################################################
 
