@@ -10,11 +10,22 @@ def generateCompletedGrid():
     print(newGrid)#
     for i in range(3):
         for j in range(3):
-            newGrid[0][i][0][j][0].remove(0)
-            choiceToFillIn = random.choice(newGrid[0][i][0][j][0])
-            newGrid[0][i][0][j][0].clear()
-            newGrid[0][i][0][j][0].append(choiceToFillIn)
-            
+            newGrid = eliminateNotPossibleNums(newGrid,3,0,i,0,j)
+            try:
+                newGrid[0][i][0][j].remove(0)
+                choiceToFillIn = random.choice(newGrid[0][i][0][j])
+                newGrid[0][i][0][j].clear()
+                newGrid[0][i][0][j].append(choiceToFillIn)
+            except ValueError:
+                pass
+            try:
+                newGrid[0][i+1][1][j].clear()
+                newGrid[0][i+1][1][j].append(choiceToFillIn)
+            except IndexError:
+                newGrid[0][i-5][1][j].clear()
+                newGrid[0][i-5][1][j].append(newGrid[0][i][0][j][0])
+    
+    return newGrid
         
         
 newGrid = generateCompletedGrid()
