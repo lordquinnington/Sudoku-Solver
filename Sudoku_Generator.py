@@ -18,12 +18,8 @@ def generateCompletedGrid():
                 newGrid[0][i][0][j].append(choiceToFillIn)
             except ValueError:
                 pass
-            try:
-                newGrid[0][i+1][1][j].clear()
-                newGrid[0][i+1][1][j].append(choiceToFillIn)
-            except IndexError:
-                newGrid[0][i-5][1][j].clear()
-                newGrid[0][i-5][1][j].append(newGrid[0][i][0][j][0])
+    for i in range(2):
+        
     
     return newGrid
         
