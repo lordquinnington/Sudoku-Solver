@@ -3,7 +3,6 @@
 import csv
 
 def convertFromQQWing(QQWing):
-    QQWing = list(QQWing)
     gridArray2D = []
     for i in range(9):
         tempArray1 = []
@@ -21,4 +20,4 @@ def writeGridToCSV(gridArray2D):
         for row in gridArray2D:
             toWrite.writerow(row)
 
-convertFromQQWing("7..21.....615....7.3.....46.....5......16........925..349..1.....79.3.5...2...7..")    # copy and paste the line of dots and numbers from QQWing into here (taken as a parameter so you can call it from elsewhere)
+convertFromQQWing(list("7..21.....615....7.3.....46.....5......16........925..349..1.....79.3.5...2...7.."))    # copy and paste the line of dots and numbers from QQWing into here (taken as a parameter so you can call it from elsewhere)
