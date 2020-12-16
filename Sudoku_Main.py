@@ -8,14 +8,14 @@ while not validInput:
     if option == '1':
         from Sudoku_Solver import initialiseSolving
         initialiseSolving()
-        validOption = True
+        validInput = True
     elif option == '2':
         from Sudoku_Generator import initialiseGenerating
         initialiseGenerating()
-        validOption = True
+        validInput = True
     else:
         print("enter a valid option")
-        validOption = False
+        validInput = False
 
 print("danke for doing sudoku-y stuff")
     
