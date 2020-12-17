@@ -37,6 +37,19 @@ def formatSudokuGridTo2D(gridArray,squareSize,gridNumber):
             gridArray2D.append(tempArray1)
     return writeCompletedGridToCSV(gridArray2D,gridNumber)
 
+def printSudokuGrid(gridArray,squareSize):
+    for i in range(squareSize):
+        for j in range(squareSize):
+            for k in range(squareSize):
+                for l in range(squareSize):
+                    if not isinstance(gridArray[i][k][j][l][0],int):
+                        print(0,end=' ')
+                    else:
+                        print(gridArray[i][k][j][l][0],end=' ')
+                print("|",end=' ')
+            print()
+        print("-----------------------")
+
 def writeCompletedGridToCSV(gridArray2D,gridNumber):
     with open("Sudoku_Grid_"+gridNumber+"_Completed.csv","w",newline='') as completedGridFile:
         toWrite = csv.writer(completedGridFile,delimiter=',')
@@ -143,7 +156,6 @@ def solve(gridArray,squareSize):
                                     return None
             finished = checkGridIsCompleted(gridArray,squareSize)
             if finished == True:
-                print("solved:")
                 return gridArray
             if gridArray == previousGrid:
                 notChanged = True
@@ -165,8 +177,9 @@ def initialiseSolving():
     gridArray = solve(gridArray,squareSize)
     finishTime = time.time()
     if gridArray != None:
-        print(gridArray)
         print("finished in "+str(round(finishTime-startTime,3))+"s")
+        print("solved:")
+        printSudokuGrid(gridArray,squareSize)
         formatSudokuGridTo2D(gridArray,squareSize,gridNumber)
         print("written to file")
     else:
