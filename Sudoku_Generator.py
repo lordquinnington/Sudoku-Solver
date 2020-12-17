@@ -8,6 +8,7 @@ from Sudoku_Solver import formatSudokuGridTo5D, checkGridIsCompleted, eliminateN
 def generateCompletedGrid():
     newGrid, squareSize = formatSudokuGridTo5D("Blank")
     print(newGrid)#
+    rowNums = []
     for i in range(3):
         for j in range(3):
             newGrid = eliminateNotPossibleNums(newGrid,3,0,i,0,j)
@@ -18,7 +19,22 @@ def generateCompletedGrid():
                 newGrid[0][i][0][j].append(choiceToFillIn)
             except ValueError:
                 pass
-    for i in range(2):
+            rowNums.append(newGrid[0][i][0][j][0])
+    print(rowNums)#
+    rowNums1 = rowNums[6:]+rowNums[:6]#
+    print(rowNums1,'\n',rowNums)#
+    for i in range(3):
+        for j in range(3):
+            for k in range(3):
+                for l in range(3):
+                    if i != 0 and j != 0:
+                        if j == 0:
+                            rowNums = rowNums[8:]+rowNums[:8]
+                            print(rowNums)#
+                        else:
+                            rowNums = rowNums[6:]+rowNums[:6]
+                            print(rowNums)#
+                
         
     
     return newGrid
