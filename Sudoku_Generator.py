@@ -60,12 +60,57 @@ def generateCompletedGrid():
             tempArray1.append(newBigRowOrder[i][x])
             options.remove(x)
         newSmallRowOrder.append(tempArray1)
+    print("\n nsro>",newSmallRowOrder)
     print("\n small rows>")#
     for i in range(3):#
         print("---------------------------")#
         for j in range(3):#
             print(newSmallRowOrder[i][j])#
-            
+    # randomly rearrange the big columns
+    bigColumnsTemp = []
+    for i in range(9):
+        tempArray1 = []
+        for j in range(3):
+            for k in range(3):
+                tempArray1.append(newSmallRowOrder[j][k][i])
+        bigColumnsTemp.append(tempArray1)
+    print("\n bct>",bigColumnsTemp)#
+    bigColumns = []
+    for i in range(3):
+        tempArray1 = []
+        for j in range(3):
+            tempArray1.append(bigColumnsTemp[3*i+j])
+        bigColumns.append(tempArray1)
+    print("\n bc>",bigColumns)#
+    newBigColumnOrder = []
+    options = [0,1,2]
+    for i in range(3):
+        x = random.choice(options)
+        newBigColumnOrder.append(bigColumns[x])
+        print("brx>",bigColumns[x])#
+        options.remove(x)
+    print("nbco>",newBigColumnOrder)#
+    print("\n big columns>")#
+    for i in range(3):#
+        print("---------------------------")#
+        for j in range(3):#
+            print(newBigColumnOrder[i][j])#
+    # randomly rearrange the small columns inside the big columns
+    newSmallColumnOrder = []
+    for i in range(3):
+        tempArray1 = []
+        options = [0,1,2]
+        for j in range(3):
+            x = random.choice(options)
+            tempArray1.append(newBigColumnOrder[i][x])
+            options.remove(x)
+        newSmallColumnOrder.append(tempArray1)
+    print("\n nsco>",newSmallColumnOrder)
+    print("\n small columns>")#
+    for i in range(3):#
+        print("---------------------------")#
+        for j in range(3):#
+            print(newSmallColumnOrder[i][j])#        
     
     return newGrid
         
