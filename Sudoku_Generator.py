@@ -1,6 +1,6 @@
 #~~~~~ Sudoku Generator ~~~~~#
 
-import random
+import random, time
 from Sudoku_Solver import writeCompletedGridToCSV
 
 ################################################ formatting functions ################################################
@@ -89,6 +89,9 @@ def generateCompletedGrid():
 
 def initialiseGenerating():
     gridNumber = input("enter a grid number> ")
+    startTime = time.time()
     newGrid = generateCompletedGrid()
+    finishTime = time.time()
+    print("grid generated (in "+str(round(finishTime-startTime,3))+"s):")
     print2DSudokuGrid(newGrid,3)
     writeCompletedGridToCSV(newGrid,gridNumber)
