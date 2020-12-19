@@ -26,7 +26,7 @@ def formatSudokuGridTo5D(gridNumber):
         gridArray5D.append(tempArray1)
     return gridArray5D, squareSize
 
-def formatSudokuGridTo2D(gridArray,squareSize,gridNumber):
+def formatSudokuGridTo2DFrom5D(gridArray,squareSize,gridNumber):
     gridArray2D = []
     for i in range(squareSize):
         for j in range(squareSize):
@@ -37,12 +37,12 @@ def formatSudokuGridTo2D(gridArray,squareSize,gridNumber):
             gridArray2D.append(tempArray1)
     return writeCompletedGridToCSV(gridArray2D,gridNumber)
 
-def printSudokuGrid(gridArray,squareSize):
+def print5DSudokuGrid(gridArray,squareSize):
     for i in range(squareSize):
         for j in range(squareSize):
             for k in range(squareSize):
                 for l in range(squareSize):
-                    if not isinstance(gridArray[i][k][j][l][0],int):
+                    if not isinstance(gridArray[i][k][j][l][0],int):    # could this be removed as if it got this far then the grid must definitely be complete? ###########
                         print(0,end=' ')
                     else:
                         print(gridArray[i][k][j][l][0],end=' ')
@@ -55,6 +55,7 @@ def writeCompletedGridToCSV(gridArray2D,gridNumber):
         toWrite = csv.writer(completedGridFile,delimiter=',')
         for row in gridArray2D:
             toWrite.writerow(row)
+    print("written to file")
 
 ################################################ searching functions ################################################
 
@@ -179,8 +180,7 @@ def initialiseSolving():
     if gridArray != None:
         print("finished in "+str(round(finishTime-startTime,3))+"s")
         print("solved:")
-        printSudokuGrid(gridArray,squareSize)
-        formatSudokuGridTo2D(gridArray,squareSize,gridNumber)
-        print("written to file")
+        print5DSudokuGrid(gridArray,squareSize)
+        formatSudokuGridTo2DFrom5D(gridArray,squareSize,gridNumber)
     else:
         print("grid unsolvable")
