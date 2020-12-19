@@ -86,7 +86,9 @@ def generateCompletedGrid():
     newSmallColumnOrder = shuffleSmallArea(newBigColumnOrder,3)    # randomly rearrange the small columns inside the big columns
     newGrid = formatSudokuGridTo2DFrom3D(newSmallColumnOrder,3)    # turns the grid back into a 2D array to make it more compatible later    
     return newGrid
-        
-newGrid = generateCompletedGrid()
-print2DSudokuGrid(newGrid,3)
-writeCompletedGridToCSV(newGrid,"22")
+
+def initialiseGenerating():
+    gridNumber = input("enter a grid number> ")
+    newGrid = generateCompletedGrid()
+    print2DSudokuGrid(newGrid,3)
+    writeCompletedGridToCSV(newGrid,gridNumber)
