@@ -3,6 +3,25 @@
 import random
 from Sudoku_Solver import writeCompletedGridToCSV
 
+################################################ formatting functions ################################################
+
+def print2DSudokuGrid(gridArray,squareSize):
+    for i in range(squareSize):
+        for j in range(squareSize):
+            for k in range(squareSize):
+                for l in range(squareSize):
+                    print(gridArray[squareSize*i+j][squareSize*k+l],end=' ')
+                print("|",end=' ')
+            print()
+        print("-----------------------")
+
+def formatSudokuGridTo2DFrom3D(gridArray,squareSize):
+    newGrid = []
+    for i in range(squareSize):
+        for j in range(squareSize):
+            newGrid.append(gridArray[i][j])
+    return newGrid
+
 ################################################ generating functions ################################################
 
 def generateCompletedGrid():
@@ -78,22 +97,15 @@ def generateCompletedGrid():
             options.remove(x)
         newSmallColumnOrder.append(tempArray1)
     # converts to a 2D array
-    newGrid = []
-    for i in range(3):
-        for j in range(3):
-            newGrid.append(newSmallColumnOrder[i][j])
-    # prints the grid
-    for i in range(3):
-        for j in range(3):
-            for k in range(3):
-                for l in range(3):
-                    print(newGrid[3*i+j][3*k+l],end=' ')
-                print("|",end=' ')
-            print()
-        print("-----------------------")
-    
+    newGrid = formatSudokuGridTo2DFrom3D(newSmallColumnOrder,3)
+    #newGrid = []
+    #for i in range(3):
+    #    for j in range(3):
+    #        newGrid.append(newSmallColumnOrder[i][j])
+            
     return newGrid
         
         
 newGrid = generateCompletedGrid()
+print2DSudokuGrid(newGrid,3)
 writeCompletedGridToCSV(newGrid,"22")
