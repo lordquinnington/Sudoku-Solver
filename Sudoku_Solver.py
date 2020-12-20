@@ -23,7 +23,7 @@ def formatSudokuGridTo5DFrom2D(gridArray2D,squareSize):
         gridArray5D.append(tempArray1)
     return gridArray5D
 
-def formatSudokuGridTo2DFrom5D(gridArray,squareSize,gridNumber):
+def formatSudokuGridTo2DFrom5D(gridArray,squareSize):
     gridArray2D = []
     for i in range(squareSize):
         for j in range(squareSize):
@@ -32,7 +32,7 @@ def formatSudokuGridTo2DFrom5D(gridArray,squareSize,gridNumber):
                 for l in range(squareSize):
                     tempArray1.append(gridArray[i][k][j][l][0])
             gridArray2D.append(tempArray1)
-    return writeCompletedGridToCSV(gridArray2D,gridNumber)
+    return gridArray2D
 
 def print5DSudokuGrid(gridArray,squareSize):
     for i in range(squareSize):
@@ -185,6 +185,6 @@ def initialiseSolving():
         print("finished in "+str(round(finishTime-startTime,3))+"s")
         print("solved:")
         print5DSudokuGrid(gridArray,squareSize)
-        formatSudokuGridTo2DFrom5D(gridArray,squareSize,gridNumber)
+        writeCompletedGridToCSV(formatSudokuGridTo2DFrom5D(gridArray,squareSize),gridNumber)
     else:
         print("grid unsolvable")
