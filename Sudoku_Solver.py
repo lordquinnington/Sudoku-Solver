@@ -4,10 +4,7 @@ import csv, copy, time
 
 ################################################ formatting functions ################################################
 
-def formatSudokuGridTo5D(gridNumber):
-    with open("Sudoku_Grid_"+gridNumber+".csv","r") as sudokuGrid:
-        gridArray2D = list(csv.reader(sudokuGrid))
-    squareSize = int(len(gridArray2D[0])**0.5)
+def formatSudokuGridTo5DFrom2D(gridArray2D,squareSize):
     gridArray5D = []
     for i in range(squareSize):
         tempArray1 = []
@@ -24,7 +21,7 @@ def formatSudokuGridTo5D(gridNumber):
                 tempArray2.append(tempArray3)
             tempArray1.append(tempArray2)
         gridArray5D.append(tempArray1)
-    return gridArray5D, squareSize
+    return gridArray5D
 
 def formatSudokuGridTo2DFrom5D(gridArray,squareSize,gridNumber):
     gridArray2D = []
@@ -42,7 +39,7 @@ def print5DSudokuGrid(gridArray,squareSize):
         for j in range(squareSize):
             for k in range(squareSize):
                 for l in range(squareSize):
-                    if not isinstance(gridArray[i][k][j][l][0],int):    # could this be removed as if it got this far then the grid must definitely be complete? ###########
+                    if not isinstance(gridArray[i][k][j][l][0],int):
                         print(0,end=' ')
                     else:
                         print(gridArray[i][k][j][l][0],end=' ')
@@ -56,6 +53,12 @@ def writeCompletedGridToCSV(gridArray2D,gridNumber):
         for row in gridArray2D:
             toWrite.writerow(row)
     print("written to file")
+
+def readIncompleteGridFromCSV(gridNumber):
+    with open("Sudoku_Grid_"+gridNumber+".csv","r") as sudokuGrid:
+        gridArray2D = list(csv.reader(sudokuGrid))
+    squareSize = int(len(gridArray2D[0])**0.5)
+    return gridArray2D, squareSize
 
 ################################################ searching functions ################################################
 
@@ -172,8 +175,9 @@ def solve(gridArray,squareSize):
 
 def initialiseSolving():
     gridNumber = str(input("enter the grid number >"))
-    gridArray, squareSize = formatSudokuGridTo5D(gridNumber)
-    print(gridArray,"\n")
+    gridArray2D, squareSize = readIncompleteGridFromCSV(gridNumber)
+    gridArray = formatSudokuGridTo5DFrom2D(gridArray2D,squareSize)
+    print5DSudokuGrid(gridArray,squareSize)
     startTime = time.time()
     gridArray = solve(gridArray,squareSize)
     finishTime = time.time()
