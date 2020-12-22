@@ -8,7 +8,7 @@ from Sudoku_Solver import formatSudokuGridTo5DFrom2D, formatSudokuGridTo2DFrom5D
 def formatSudokuGridTo3DFrom2D(gridArray,size):
     gridArray3D = []
     for i in range(size):
-        temparray1 = []
+        tempArray1 = []
         for j in range(size):
             tempArray2 = []
             for k in range(1):
@@ -43,7 +43,7 @@ difficultyFont = pygame.font.SysFont('lucidasansregular',15)
 keypadNumbersFont = pygame.font.SysFont('lucidasansregular',60)
 keypadTextFont = pygame.font.SysFont('arial',30)
 showMistakesFont = pygame.font.SysFont('arial',22)
-notesFont = pygame.font.SysFont('lucidasansregular',10)
+notesFont = pygame.font.SysFont('lucidasansregular',20)
 
 difficulty = "Please select game"
 finished = False
@@ -101,8 +101,10 @@ while not finished:
             difficulty = "Easy"
             answerGrid = generateCompletedGrid()
             tempGrid  = formatSudokuGridTo5DFrom2D(answerGrid,3)     # check this line is needed or if the generate grid returns a 2d array ############################################################
+            answerGrid = formatSudokuGridTo3DFrom2D(answerGrid,9)
             puzzleGrid = createNewPuzzle(tempGrid,4)
             puzzleGrid = formatSudokuGridTo2DFrom5D(puzzleGrid,3)    # and this line
+            puzzleGrid = formatSudokuGridTo3DFrom2D(puzzleGrid,9)
             origGrid = copy.deepcopy(puzzleGrid)
     newEasyGameText = newGameButtonsFont.render("New easy game",False,black)
     gameDisplay.blit(newEasyGameText,(636,42))
@@ -114,8 +116,10 @@ while not finished:
             difficulty = "Medium"
             answerGrid = generateCompletedGrid()
             tempGrid  = formatSudokuGridTo5DFrom2D(answerGrid,3)
+            answerGrid = formatSudokuGridTo3DFrom2D(answerGrid,9)
             puzzleGrid = createNewPuzzle(tempGrid,3)
             puzzleGrid = formatSudokuGridTo2DFrom5D(puzzleGrid,3)
+            puzzleGrid = formatSudokuGridTo3DFrom2D(puzzleGrid,9)
             origGrid = copy.deepcopy(puzzleGrid)
     newMediumGameText = newGameButtonsFont.render("New medium game",False,black)
     gameDisplay.blit(newMediumGameText,(800,42))
@@ -127,8 +131,10 @@ while not finished:
             difficulty = "Hard"
             answerGrid = generateCompletedGrid()
             tempGrid  = formatSudokuGridTo5DFrom2D(answerGrid,3)
+            answerGrid = formatSudokuGridTo3DFrom2D(answerGrid,9)
             puzzleGrid = createNewPuzzle(tempGrid,2)
             puzzleGrid = formatSudokuGridTo2DFrom5D(puzzleGrid,3)
+            puzzleGrid = formatSudokuGridTo3DFrom2D(puzzleGrid,9)
             origGrid = copy.deepcopy(puzzleGrid)
     newHardGameText = newGameButtonsFont.render("New hard game",False,black)
     gameDisplay.blit(newHardGameText,(636,102))
@@ -140,8 +146,10 @@ while not finished:
             difficulty = "Expert"
             answerGrid = generateCompletedGrid()
             tempGrid  = formatSudokuGridTo5DFrom2D(answerGrid,3)
+            answerGrid = formatSudokuGridTo3DFrom2D(answerGrid,9)
             puzzleGrid = createNewPuzzle(tempGrid,1)
-            puzzleGrid = formatSudokuGridTo2DFrom5D(puzzleGrid,3)     # could you remove this line from all of them and just have one at the bottom, as it does the same job? #####################################
+            puzzleGrid = formatSudokuGridTo2DFrom5D(puzzleGrid,3)
+            puzzleGrid = formatSudokuGridTo3DFrom2D(puzzleGrid,9)
             origGrid = copy.deepcopy(puzzleGrid)
     newExpertGameText = newGameButtonsFont.render("New expert game",False,black)
     gameDisplay.blit(newExpertGameText,(808,102))
@@ -228,39 +236,66 @@ while not finished:
         for i in range(9):
             for j in range(9):
                 if showMistakes == True:    # show mistakes
-                    if origGrid[j][i] == 0:
-                        if puzzleGrid[j][i] != 0:
-                            if puzzleGrid[j][i] != answerGrid[j][i]:
-                                pygame.draw.rect(gameDisplay,wrongSquareColour,(60*i+32,60*j+32,58,58))
-                if puzzleGrid[j][i] == 0:
+                    if origGrid[j][i][0] == 0:
+                        if puzzleGrid[j][i][0] != 0:
+                            if puzzleGrid[j][i][0] != answerGrid[j][i][0]:
+                                pygame.draw.rect(gameDisplay,wrongSquareColour,(60*i+32,60*j+32,58,58))    # combine all the if statements? ########################################################
+                if puzzleGrid[j][i][0] == 0:
                     numberToShow = ""
                 else:
-                    numberToShow = str(puzzleGrid[j][i])
-                if origGrid[j][i] == 0:
+                    numberToShow = str(puzzleGrid[j][i][0])
+                if origGrid[j][i][0] == 0:
                     gridNumbers = gridNumbersFont.render(numberToShow,False,filledInNumberColour)
                 else:
                     gridNumbers = gridNumbersFont.render(numberToShow,False,black)
                 gameDisplay.blit(gridNumbers,(60*i+48,60*j+34))
-
+                if len(puzzleGrid[j][i]) > 1 and puzzleGrid[j][i][0] == 0:   # notes
+                    #for k in range(3):
+                    #    for l in range(3):
+                    #        for m in range(1,len(puzzleGrid[i][j])+1):
+                    #            numberToShow = str(puzzleGrid[j][i][m])#+1
+                    #            noteNumbers = notesFont.render(numberToShow,False,filledInNumberColour)
+                    #            gameDisplay.blit(noteNumbers,(60*i+30+(20*k+5),60*j+30+(20*l-1)))
+                    toDisplay = [0,0,0,0,0,0,0,0,0]
+                    for m in range(len(puzzleGrid[j][i])):
+                        toDisplay[puzzleGrid[j][i][m]-1] = puzzleGrid[j][i][m]
+                    for k in range(3):
+                        for l in range(3):
+                            if toDisplay[3*k+l] != 0:
+                                numberToShow = str(toDisplay[3*k+l])
+                                noteNumbers = notesFont.render(numberToShow,False,filledInNumberColour)
+                                #gameDisplay.blit(noteNumbers,(60*i+30+(20*k+5),60*j+30+(20*l-1)))
+                                gameDisplay.blit(noteNumbers,(60*i+30+(20*l+5),60*j+30+(20*k-1)))
+                                
     # fill in squares
-    if needToFillIn == True:
-        if coords != 0 and puzzleGrid != 0:
-            if origGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)] == 0:
-                puzzleGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)] = numPressed
-        needToFillIn = False
+    if enableNotes == False:
+        if needToFillIn == True:
+            if coords != 0 and puzzleGrid != 0:
+                if origGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)][0] == 0:
+                    puzzleGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)][0] = numPressed
+            needToFillIn = False
+    else:
+        if needToFillIn == True:
+            if coords != 0 and puzzleGrid != 0:
+                if puzzleGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)][0] == 0:
+                    if numPressed not in puzzleGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)]:
+                        puzzleGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)].append(numPressed)
+            needToFillIn = False
 
     # erase numbers
     if needToErase == True:
         if coords != 0 and puzzleGrid != 0:
-            if origGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)] == 0:
-                puzzleGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)] = 0
+            if origGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)][0] == 0:
+                puzzleGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)].clear()
+                puzzleGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)].append(0)
+                #puzzleGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)][0] = 0
         needToErase = False
 
     # show hint
     if needToShowHint == True:
         if coords != 0 and puzzleGrid != 0:
-            if origGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)] == 0:
-                puzzleGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)] = answerGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)]
+            if origGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)][0] == 0:
+                puzzleGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)][0] = answerGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)][0]
         needToShowHint = False
             
     pygame.display.flip()
@@ -272,6 +307,7 @@ pygame.quit()
 
 '''
 timer?
+number of hints on finishing screen?
 finishing screen
-notes,show mistakes, hint, erase
+notes
 '''
