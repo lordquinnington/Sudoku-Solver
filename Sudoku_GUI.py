@@ -7,7 +7,7 @@ from Sudoku_Solver import formatSudokuGridTo5DFrom2D, formatSudokuGridTo2DFrom5D
 
 pygame.init()
 gameDisplay = pygame.display.set_mode((1000,601))
-pygame.display.set_caption("Sudoku GUI")
+pygame.display.set_caption("Sudoku by Mattyou Quinn")
 white = (255,255,255)    # use for backgroundColour, mainButtonColour and squareColour
 black = (20,20,20)
 #mainButtonColourHover = (200,200,200)
@@ -25,10 +25,13 @@ gridNumbersFont = pygame.font.SysFont('lucidasansregular',43)
 newGameButtonsFont = pygame.font.SysFont('arial',23)
 difficultyFont = pygame.font.SysFont('lucidasansregular',15)
 keypadNumbersFont = pygame.font.SysFont('lucidasansregular',60)
-keypadTextFont = pygame.font.SysFont('arial',35)
+keypadTextFont = pygame.font.SysFont('arial',30)
+showMistakesFont = pygame.font.SysFont('arial',22)
 difficulty = "Please select game"
 finished = False
 squareClicked = False
+enableNotes = True
+showMistakes = False
 puzzleGrid = 0
 keypad = [[1,2,3],[4,5,6],[7,8,9]]
 
@@ -73,7 +76,7 @@ while not finished:
     if 621 < mousePos[0] < 781 and 32 < mousePos[1] < 82:
         pygame.draw.rect(gameDisplay,otherButtonColourHover,(621,32,160,50),border_radius=4)
         if event.type == pygame.MOUSEBUTTONDOWN:
-            time.sleep(0.1)
+            #time.sleep(0.1)
             difficulty = "Easy"
             answerGrid = generateCompletedGrid()
             tempGrid  = formatSudokuGridTo5DFrom2D(answerGrid,3)
@@ -86,7 +89,7 @@ while not finished:
     if 800 < mousePos[0] < 960 and 32 < mousePos[1] < 82:
         pygame.draw.rect(gameDisplay,otherButtonColourHover,(800,32,160,50),border_radius=4)
         if event.type == pygame.MOUSEBUTTONDOWN:
-            time.sleep(0.1)    # time delay stops the button from accidentally being pressed twice
+            #time.sleep(0.1)    # time delay stops the button from accidentally being pressed twice
             difficulty = "Medium"
             answerGrid = generateCompletedGrid()
             tempGrid  = formatSudokuGridTo5DFrom2D(answerGrid,3)
@@ -99,7 +102,7 @@ while not finished:
     if 621 < mousePos[0] < 781 and 92 < mousePos[1] < 142:
         pygame.draw.rect(gameDisplay,otherButtonColourHover,(621,92,160,50),border_radius=4)
         if event.type == pygame.MOUSEBUTTONDOWN:
-            time.sleep(0.1)
+            #time.sleep(0.1)
             difficulty = "Hard"
             answerGrid = generateCompletedGrid()
             tempGrid  = formatSudokuGridTo5DFrom2D(answerGrid,3)
@@ -112,7 +115,7 @@ while not finished:
     if 800 < mousePos[0] < 960 and 92 < mousePos[1] < 142:
         pygame.draw.rect(gameDisplay,otherButtonColourHover,(800,92,160,50),border_radius=4)
         if event.type == pygame.MOUSEBUTTONDOWN:
-            time.sleep(0.1)
+            #time.sleep(0.1)
             difficulty = "Expert"
             answerGrid = generateCompletedGrid()
             tempGrid  = formatSudokuGridTo5DFrom2D(answerGrid,3)
@@ -130,14 +133,28 @@ while not finished:
     # keypad buttons
     for i in range(3):
         for j in range(3):
-            if(113*i+621) < mousePos[0] < (113*i+734) and (96*j+152) < mousePos[1] < (96*j+248):    # for hovering (here so doesn't interfere with the other lines)
+            if (113*i+621) < mousePos[0] < (113*i+734) and (96*j+152) < mousePos[1] < (96*j+248):    # for hovering (here so doesn't interfere with the other lines)
                 pygame.draw.rect(gameDisplay,keypadColourHover,(113*i+621,96*j+152,113,96))
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     pygame.draw.rect(gameDisplay,keypadColourPressed,(113*i+621,96*j+152,113,96))
 
     for i in range(2):
         for j in range(2):
-            
+            if (170*i+621) < mousePos[0] < (170*i+791) and (66*j+440) < mousePos[1] < (66*j+506):
+                pygame.draw.rect(gameDisplay,keypadColourHover,(170*i+621,66*j+440,170,66))
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    pygame.draw.rect(gameDisplay,keypadColourPressed,(170*i+621,66*j+440,170,66))
+                    #time.sleep(0.17)
+                    if i == 0 and j == 1:
+                        if enableNotes == True:
+                            enableNotes = False
+                        else:
+                            enableNotes = True
+                    if i == 1 and j == 1:
+                        if showMistakes == True:
+                            showMistakes = False
+                        else:
+                            showMistakes = True
             
     pygame.draw.rect(gameDisplay,keypadColour,(621,152,339,419),width=2)
     for i in range(3):
@@ -152,6 +169,23 @@ while not finished:
             numberToDisplay = str(keypad[i][j])
             keypadNumbers = keypadNumbersFont.render(numberToDisplay,False,black)
             gameDisplay.blit(keypadNumbers,(113*j+657,96*i+165))
+
+    # keypad text
+    eraseButton = keypadTextFont.render("Erase",False,black)
+    gameDisplay.blit(eraseButton,(675,455))
+    hintButton = keypadTextFont.render("Hint",False,black)
+    gameDisplay.blit(hintButton,(850,455))
+    if enableNotes == True:
+        enableNotesButton = keypadTextFont.render("Notes: On",False,black)
+    else:
+        enableNotesButton = keypadTextFont.render("Notes: Off",False,black)
+    gameDisplay.blit(enableNotesButton,(650,520))
+
+    if showMistakes == True:
+        showMistakesButton = showMistakesFont.render("Show Mistakes: On",False,black)
+    else:
+        showMistakesButton = showMistakesFont.render("Show Mistakes: Off",False,black)
+    gameDisplay.blit(showMistakesButton,(798,526))
 
     # grid square hovering
     for i in range(9):
@@ -176,5 +210,13 @@ while not finished:
             
     pygame.display.flip()
     clock.tick(60)
+    time.sleep(0.085)
 
 pygame.quit()
+
+
+'''
+timer?
+finishing screen
+notes,check for mistakes, hint, erase
+'''
