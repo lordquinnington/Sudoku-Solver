@@ -5,6 +5,18 @@ from Sudoku_Generator import generateCompletedGrid, print2DSudokuGrid
 from Sudoku_Creator import createNewPuzzle
 from Sudoku_Solver import formatSudokuGridTo5DFrom2D, formatSudokuGridTo2DFrom5D
 
+def formatSudokuGridTo3DFrom2D(gridArray,size):
+    gridArray3D = []
+    for i in range(size):
+        temparray1 = []
+        for j in range(size):
+            tempArray2 = []
+            for k in range(1):
+                tempArray2.append(gridArray[i][j])
+            tempArray1.append(tempArray2)
+        gridArray3D.append(tempArray1)
+    return gridArray3D
+
 pygame.init()
 gameDisplay = pygame.display.set_mode((1000,601))
 pygame.display.set_caption("Sudoku by Mattyou Quinn")
@@ -21,6 +33,7 @@ otherButtonColour = (65,150,240)    # for the new games buttons etc
 otherButtonColourHover = (95,170,255)
 smallLineColour = (170,170,170)
 filledInNumberColour = (30,134,232)
+wrongSquareColour = (255,135,135)
 
 clock = pygame.time.Clock()
 
@@ -30,6 +43,7 @@ difficultyFont = pygame.font.SysFont('lucidasansregular',15)
 keypadNumbersFont = pygame.font.SysFont('lucidasansregular',60)
 keypadTextFont = pygame.font.SysFont('arial',30)
 showMistakesFont = pygame.font.SysFont('arial',22)
+notesFont = pygame.font.SysFont('lucidasansregular',10)
 
 difficulty = "Please select game"
 finished = False
@@ -64,7 +78,7 @@ while not finished:
         for i in range(9):
             pygame.draw.rect(gameDisplay,RCSColourSelected,(coords[0],60*i+32,58,58))    # column
             pygame.draw.rect(gameDisplay,RCSColourSelected,(60*i+32,coords[1],58,58))    # row
-        pygame.draw.rect(gameDisplay,squareColourPressed,(coords[0],coords[1],58,58))    # square selected 
+        pygame.draw.rect(gameDisplay,squareColourPressed,(coords[0],coords[1],58,58))    # square selected
 
     # small grid lines
     for j in range(8):
@@ -86,9 +100,9 @@ while not finished:
         if event.type == pygame.MOUSEBUTTONDOWN:
             difficulty = "Easy"
             answerGrid = generateCompletedGrid()
-            tempGrid  = formatSudokuGridTo5DFrom2D(answerGrid,3)
+            tempGrid  = formatSudokuGridTo5DFrom2D(answerGrid,3)     # check this line is needed or if the generate grid returns a 2d array ############################################################
             puzzleGrid = createNewPuzzle(tempGrid,4)
-            puzzleGrid = formatSudokuGridTo2DFrom5D(puzzleGrid,3)
+            puzzleGrid = formatSudokuGridTo2DFrom5D(puzzleGrid,3)    # and this line
             origGrid = copy.deepcopy(puzzleGrid)
     newEasyGameText = newGameButtonsFont.render("New easy game",False,black)
     gameDisplay.blit(newEasyGameText,(636,42))
@@ -154,7 +168,6 @@ while not finished:
                 pygame.draw.rect(gameDisplay,keypadColourHover,(170*i+621,66*j+440,170,66))
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     pygame.draw.rect(gameDisplay,keypadColourPressed,(170*i+621,66*j+440,170,66))
-                    #time.sleep(0.17)
                     if i == 0 and j == 1:
                         if enableNotes == True:
                             enableNotes = False
@@ -214,6 +227,11 @@ while not finished:
     if puzzleGrid != 0:
         for i in range(9):
             for j in range(9):
+                if showMistakes == True:    # show mistakes
+                    if origGrid[j][i] == 0:
+                        if puzzleGrid[j][i] != 0:
+                            if puzzleGrid[j][i] != answerGrid[j][i]:
+                                pygame.draw.rect(gameDisplay,wrongSquareColour,(60*i+32,60*j+32,58,58))
                 if puzzleGrid[j][i] == 0:
                     numberToShow = ""
                 else:
