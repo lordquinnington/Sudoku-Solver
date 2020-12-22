@@ -13,7 +13,7 @@ black = (20,20,20)
 mainButtonColourHover = (200,200,200)
 squareColourHover = (220,250,255)
 squareColourPressed = (150,220,240)
-RCSColourSelected = (180,180,180)    # RCS = row/column/square
+RCSColourSelected = (225,225,225)    # RCS = row/column/square
 otherButtonColour = (65,150,240)    # for the new games buttons etc
 otherButtonColourHover = (95,170,255)
 smallLineColour = (170,170,170)
@@ -35,6 +35,17 @@ while not finished:
 
     # background
     gameDisplay.fill(white)
+
+    # square after they have been clicked
+    if squareClicked == True:
+        for i in range(3):
+            for j in range(3):
+                if (180*i+30) < coords[0] < (180*i+210) and (180*j+30) < coords[1] < (180*j+210):
+                    pygame.draw.rect(gameDisplay,RCSColourSelected,(180*i+30,180*j+30,180,180))     # big square
+        for i in range(9):
+            pygame.draw.rect(gameDisplay,RCSColourSelected,(coords[0],60*i+32,58,58))    # column
+            pygame.draw.rect(gameDisplay,RCSColourSelected,(60*i+32,coords[1],58,58))    # row
+        pygame.draw.rect(gameDisplay,squareColourPressed,(coords[0],coords[1],58,58))    # square selected 
 
     # small grid lines
     for j in range(8):
@@ -108,11 +119,15 @@ while not finished:
                     coords = [(60*i+32),(60*j+32)]
 
     # square after they have been clicked
-    if squareClicked == True:
-        for i in range(9):
-            pygame.draw.rect(gameDisplay,RCSColourSelected,(coords[0],60*i+32,58,58))
-            pygame.draw.rect(gameDisplay,RCSColourSelected,(60*i+32,coords[1],58,58))
-        pygame.draw.rect(gameDisplay,squareColourPressed,(coords[0],coords[1],58,58))
+    #if squareClicked == True:
+    #    for i in range(3):
+    #        for j in range(3):
+    #            if (180*i+30) < coords[0] < (180*i+210) and (180*j+30) < coords[1] < (180*j+210):
+    #                pygame.draw.rect(gameDisplay,RCSColourSelected,(180*i+30,180*j+30,180,180))     # big square
+    #    for i in range(9):
+    #        pygame.draw.rect(gameDisplay,RCSColourSelected,(coords[0],60*i+32,58,58))    # column
+    #        pygame.draw.rect(gameDisplay,RCSColourSelected,(60*i+32,coords[1],58,58))    # row
+    #    pygame.draw.rect(gameDisplay,squareColourPressed,(coords[0],coords[1],58,58))    # square selected 
         
     # numbers in the grid
     if puzzleGrid != 0:
