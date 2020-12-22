@@ -250,12 +250,6 @@ while not finished:
                     gridNumbers = gridNumbersFont.render(numberToShow,False,black)
                 gameDisplay.blit(gridNumbers,(60*i+48,60*j+34))
                 if len(puzzleGrid[j][i]) > 1 and puzzleGrid[j][i][0] == 0:   # notes
-                    #for k in range(3):
-                    #    for l in range(3):
-                    #        for m in range(1,len(puzzleGrid[i][j])+1):
-                    #            numberToShow = str(puzzleGrid[j][i][m])#+1
-                    #            noteNumbers = notesFont.render(numberToShow,False,filledInNumberColour)
-                    #            gameDisplay.blit(noteNumbers,(60*i+30+(20*k+5),60*j+30+(20*l-1)))
                     toDisplay = [0,0,0,0,0,0,0,0,0]
                     for m in range(len(puzzleGrid[j][i])):
                         toDisplay[puzzleGrid[j][i][m]-1] = puzzleGrid[j][i][m]
@@ -264,7 +258,6 @@ while not finished:
                             if toDisplay[3*k+l] != 0:
                                 numberToShow = str(toDisplay[3*k+l])
                                 noteNumbers = notesFont.render(numberToShow,False,filledInNumberColour)
-                                #gameDisplay.blit(noteNumbers,(60*i+30+(20*k+5),60*j+30+(20*l-1)))
                                 gameDisplay.blit(noteNumbers,(60*i+30+(20*l+5),60*j+30+(20*k-1)))
                                 
     # fill in squares
@@ -278,7 +271,9 @@ while not finished:
         if needToFillIn == True:
             if coords != 0 and puzzleGrid != 0:
                 if puzzleGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)][0] == 0:
-                    if numPressed not in puzzleGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)]:
+                    if numPressed in puzzleGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)]:
+                        puzzleGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)].remove(numPressed)
+                    else:
                         puzzleGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)].append(numPressed)
             needToFillIn = False
 
@@ -288,7 +283,6 @@ while not finished:
             if origGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)][0] == 0:
                 puzzleGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)].clear()
                 puzzleGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)].append(0)
-                #puzzleGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)][0] = 0
         needToErase = False
 
     # show hint
