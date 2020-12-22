@@ -1,6 +1,6 @@
 #~~~~~ Sudoku GUI ~~~~~#
 
-import pygame, time
+import pygame, time, copy
 from Sudoku_Generator import generateCompletedGrid, print2DSudokuGrid
 from Sudoku_Creator import createNewPuzzle
 from Sudoku_Solver import formatSudokuGridTo5DFrom2D, formatSudokuGridTo2DFrom5D
@@ -8,9 +8,9 @@ from Sudoku_Solver import formatSudokuGridTo5DFrom2D, formatSudokuGridTo2DFrom5D
 pygame.init()
 gameDisplay = pygame.display.set_mode((1000,601))
 pygame.display.set_caption("Sudoku by Mattyou Quinn")
+
 white = (255,255,255)    # use for backgroundColour, mainButtonColour and squareColour
 black = (20,20,20)
-#mainButtonColourHover = (200,200,200)
 squareColourHover = (220,250,255)
 squareColourPressed = (150,220,240)
 RCSColourSelected = (225,225,225)    # RCS = row/column/square
@@ -20,20 +20,26 @@ keypadColourPressed = (200,200,200)
 otherButtonColour = (65,150,240)    # for the new games buttons etc
 otherButtonColourHover = (95,170,255)
 smallLineColour = (170,170,170)
+filledInNumberColour = (30,134,232)
+
 clock = pygame.time.Clock()
+
 gridNumbersFont = pygame.font.SysFont('lucidasansregular',43)
 newGameButtonsFont = pygame.font.SysFont('arial',23)
 difficultyFont = pygame.font.SysFont('lucidasansregular',15)
 keypadNumbersFont = pygame.font.SysFont('lucidasansregular',60)
 keypadTextFont = pygame.font.SysFont('arial',30)
 showMistakesFont = pygame.font.SysFont('arial',22)
+
 difficulty = "Please select game"
 finished = False
 squareClicked = False
 enableNotes = True
 showMistakes = False
+needToFillIn = False
 puzzleGrid = 0
 keypad = [[1,2,3],[4,5,6],[7,8,9]]
+coords = 0
 
 
 while not finished:
@@ -76,12 +82,12 @@ while not finished:
     if 621 < mousePos[0] < 781 and 32 < mousePos[1] < 82:
         pygame.draw.rect(gameDisplay,otherButtonColourHover,(621,32,160,50),border_radius=4)
         if event.type == pygame.MOUSEBUTTONDOWN:
-            #time.sleep(0.1)
             difficulty = "Easy"
             answerGrid = generateCompletedGrid()
             tempGrid  = formatSudokuGridTo5DFrom2D(answerGrid,3)
             puzzleGrid = createNewPuzzle(tempGrid,4)
             puzzleGrid = formatSudokuGridTo2DFrom5D(puzzleGrid,3)
+            origGrid = copy.deepcopy(puzzleGrid)
     newEasyGameText = newGameButtonsFont.render("New easy game",False,black)
     gameDisplay.blit(newEasyGameText,(636,42))
         
@@ -89,12 +95,12 @@ while not finished:
     if 800 < mousePos[0] < 960 and 32 < mousePos[1] < 82:
         pygame.draw.rect(gameDisplay,otherButtonColourHover,(800,32,160,50),border_radius=4)
         if event.type == pygame.MOUSEBUTTONDOWN:
-            #time.sleep(0.1)    # time delay stops the button from accidentally being pressed twice
             difficulty = "Medium"
             answerGrid = generateCompletedGrid()
             tempGrid  = formatSudokuGridTo5DFrom2D(answerGrid,3)
             puzzleGrid = createNewPuzzle(tempGrid,3)
             puzzleGrid = formatSudokuGridTo2DFrom5D(puzzleGrid,3)
+            origGrid = copy.deepcopy(puzzleGrid)
     newMediumGameText = newGameButtonsFont.render("New medium game",False,black)
     gameDisplay.blit(newMediumGameText,(800,42))
     
@@ -102,12 +108,12 @@ while not finished:
     if 621 < mousePos[0] < 781 and 92 < mousePos[1] < 142:
         pygame.draw.rect(gameDisplay,otherButtonColourHover,(621,92,160,50),border_radius=4)
         if event.type == pygame.MOUSEBUTTONDOWN:
-            #time.sleep(0.1)
             difficulty = "Hard"
             answerGrid = generateCompletedGrid()
             tempGrid  = formatSudokuGridTo5DFrom2D(answerGrid,3)
             puzzleGrid = createNewPuzzle(tempGrid,2)
             puzzleGrid = formatSudokuGridTo2DFrom5D(puzzleGrid,3)
+            origGrid = copy.deepcopy(puzzleGrid)
     newHardGameText = newGameButtonsFont.render("New hard game",False,black)
     gameDisplay.blit(newHardGameText,(636,102))
     
@@ -115,12 +121,12 @@ while not finished:
     if 800 < mousePos[0] < 960 and 92 < mousePos[1] < 142:
         pygame.draw.rect(gameDisplay,otherButtonColourHover,(800,92,160,50),border_radius=4)
         if event.type == pygame.MOUSEBUTTONDOWN:
-            #time.sleep(0.1)
             difficulty = "Expert"
             answerGrid = generateCompletedGrid()
             tempGrid  = formatSudokuGridTo5DFrom2D(answerGrid,3)
             puzzleGrid = createNewPuzzle(tempGrid,1)
             puzzleGrid = formatSudokuGridTo2DFrom5D(puzzleGrid,3)     # could you remove this line from all of them and just have one at the bottom, as it does the same job? #####################################
+            origGrid = copy.deepcopy(puzzleGrid)
     newExpertGameText = newGameButtonsFont.render("New expert game",False,black)
     gameDisplay.blit(newExpertGameText,(808,102))
 
@@ -137,6 +143,8 @@ while not finished:
                 pygame.draw.rect(gameDisplay,keypadColourHover,(113*i+621,96*j+152,113,96))
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     pygame.draw.rect(gameDisplay,keypadColourPressed,(113*i+621,96*j+152,113,96))
+                    needToFillIn = True
+                    numPressed = keypad[j][i]
 
     for i in range(2):
         for j in range(2):
@@ -204,13 +212,22 @@ while not finished:
                     numberToShow = ""
                 else:
                     numberToShow = str(puzzleGrid[j][i])
-                gridNumbers = gridNumbersFont.render(numberToShow,False,black)     # is it possible to combine these 2 lines? put top in brackets in bottom  ##############################################
+                if origGrid[j][i] == 0:
+                    gridNumbers = gridNumbersFont.render(numberToShow,False,filledInNumberColour)
+                else:
+                    gridNumbers = gridNumbersFont.render(numberToShow,False,black)
                 gameDisplay.blit(gridNumbers,(60*i+48,60*j+34))
+
+    # fill in squares
+    if needToFillIn == True:
+        if coords != 0 and puzzleGrid != 0:
+            puzzleGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)] = numPressed
+        needToFillIn = False
                 
             
     pygame.display.flip()
     clock.tick(60)
-    time.sleep(0.085)
+    time.sleep(0.082)    # time delay does hinder the visual performance ever so slightly but it was necessary for the buttons to function correctly
 
 pygame.quit()
 
@@ -218,5 +235,5 @@ pygame.quit()
 '''
 timer?
 finishing screen
-notes,check for mistakes, hint, erase
+notes,show mistakes, hint, erase
 '''
