@@ -37,6 +37,8 @@ squareClicked = False
 enableNotes = True
 showMistakes = False
 needToFillIn = False
+needToErase = False
+needToShowHint = False
 puzzleGrid = 0
 keypad = [[1,2,3],[4,5,6],[7,8,9]]
 coords = 0
@@ -158,11 +160,15 @@ while not finished:
                             enableNotes = False
                         else:
                             enableNotes = True
+                    if i == 0 and j == 0:
+                        needToErase = True
                     if i == 1 and j == 1:
                         if showMistakes == True:
                             showMistakes = False
                         else:
                             showMistakes = True
+                    if i == 1 and j == 0:
+                        needToShowHint = True
             
     pygame.draw.rect(gameDisplay,keypadColour,(621,152,339,419),width=2)
     for i in range(3):
@@ -221,12 +227,26 @@ while not finished:
     # fill in squares
     if needToFillIn == True:
         if coords != 0 and puzzleGrid != 0:
-            puzzleGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)] = numPressed
+            if origGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)] == 0:
+                puzzleGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)] = numPressed
         needToFillIn = False
-                
+
+    # erase numbers
+    if needToErase == True:
+        if coords != 0 and puzzleGrid != 0:
+            if origGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)] == 0:
+                puzzleGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)] = 0
+        needToErase = False
+
+    # show hint
+    if needToShowHint == True:
+        if coords != 0 and puzzleGrid != 0:
+            if origGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)] == 0:
+                puzzleGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)] = answerGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)]
+        needToShowHint = False
             
     pygame.display.flip()
-    clock.tick(60)
+    #clock.tick(60)
     time.sleep(0.082)    # time delay does hinder the visual performance ever so slightly but it was necessary for the buttons to function correctly
 
 pygame.quit()
