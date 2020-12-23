@@ -250,7 +250,7 @@ def runMainProgramGUI():
                     if puzzleGrid[i][j][0] == answerGrid[i][j][0]:
                         counter += 1
             if counter == 81:
-                time.sleep(1.5)
+                time.sleep(2)
                 finished = True
                 
         pygame.display.flip()    # updates the display
@@ -262,17 +262,18 @@ def runFinishingScreenGUI():
     pygame.init()
     gameDisplay = pygame.display.set_mode((1000,601))
     pygame.display.set_caption("Sudoku by Mattyou Quinn")
-    clock = pygame.time.Clock()
 
     white = (255,255,255)
     black = (20,20,20)
     grey = (100,100,100)
     buttonColour = (65,150,240)
     buttonColourHover = (95,170,255)
+    buttonColourPressed = (60,140,225)
     lightGrey = (170,170,170)
 
     congratsFont = pygame.font.SysFont('lucidasansregular',70)
     statsFont = pygame.font.SysFont('lucidasansregular',27)
+    buttonsFont = pygame.font.SysFont('lucidasansregular',32)
 
     finished = False
 
@@ -288,27 +289,51 @@ def runFinishingScreenGUI():
         gameDisplay.blit(congratsText,(210,100))
         timeText = statsFont.render("Time taken:",False,black)
         gameDisplay.blit(timeText,(320,200))
-        timeText = statsFont.render("5m 36s",False,lightGrey)
+        timeText = statsFont.render("0h 5m 36s",False,lightGrey)
         gameDisplay.blit(timeText,(490,200))
         hintsText = statsFont.render("Hints shown:",False,black)
         gameDisplay.blit(hintsText,(303,250))
         hintsText = statsFont.render("4",False,lightGrey)
-        gameDisplay.blit(hintsText,(490,250))
+        gameDisplay.blit(hintsText,(545,250))
+        
+        for i in range(2):
+            pygame.draw.rect(gameDisplay,buttonColour,(230*i+280,310,190,60),border_radius=4)
+            if (230*i+280) < mousePos[0] < (230*i+470) and 310 < mousePos[1] < 370:
+                pygame.draw.rect(gameDisplay,buttonColourHover,(230*i+280,310,190,60),border_radius=4)
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    pygame.draw.rect(gameDisplay,buttonColourPressed,(230*i+280,310,190,60),border_radius=4)
+                    if i == 0:
+                        quitGame =  False
+                    else:
+                        quitGame = True
+                    finished = True
+        replayText = buttonsFont.render("Play Again",False,black)
+        gameDisplay.blit(replayText,(295,320))
+        quitText = buttonsFont.render("Quit Game",False,black)
+        gameDisplay.blit(quitText,(523,320))
+
 
         pygame.display.flip()
-        clock.tick(60)
+        time.sleep(0.082)
         
     pygame.quit()
+    if quitGame == False:
+        return True
+    return False
 
-playAgain = False#True
+playAgain = True
 while playAgain:
     runMainProgramGUI()
     playAgain = runFinishingScreenGUI()
 
-runFinishingScreenGUI()#
+#runFinishingScreenGUI()#
 #runMainProgramGUI()#
 
 print("thank you for doing sudoku-y stuff")
+
+
+## pressing the cross takes you to the finishing screen NOT just quitting ###########################################################################################################
+## the time delay happens before the number is filled in when completed so the box remains empty until it goes to the finishing screen ##############################################
 
 '''
 timer?
@@ -318,4 +343,5 @@ try add undo?
 show answer
 restart
 keyboard shortcuts? h == hint, e = erase etc
+make new games buttons flash when pressed
 '''
