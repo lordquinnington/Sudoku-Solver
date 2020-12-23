@@ -1,7 +1,7 @@
 #~~~~~ Sudoku GUI ~~~~~#
 
 import pygame, time, copy
-from Sudoku_Generator import generateCompletedGrid, print2DSudokuGrid
+from Sudoku_Generator import generateCompletedGrid
 from Sudoku_Creator import createNewPuzzle
 from Sudoku_Solver import formatSudokuGridTo5DFrom2D, formatSudokuGridTo2DFrom5D
 
@@ -35,8 +35,6 @@ smallLineColour = (170,170,170)
 filledInNumberColour = (30,134,232)
 wrongSquareColour = (255,135,135)
 
-clock = pygame.time.Clock()
-
 gridNumbersFont = pygame.font.SysFont('lucidasansregular',43)
 newGameButtonsFont = pygame.font.SysFont('arial',23)
 difficultyFont = pygame.font.SysFont('lucidasansregular',15)
@@ -46,23 +44,23 @@ showMistakesFont = pygame.font.SysFont('arial',22)
 notesFont = pygame.font.SysFont('lucidasansregular',20)
 
 difficulty = "Please select game"
+enableNotes = "On"    # not boolean so it can be used in the button text saving 3 lines and doesnt affect functionality (same for show mistakes)
+showMistakes = "Off"
 finished = False
 squareClicked = False
-enableNotes = True
-showMistakes = False
 needToFillIn = False
 needToErase = False
 needToShowHint = False
 puzzleGrid = 0
-keypad = [[1,2,3],[4,5,6],[7,8,9]]
 coords = 0
-
+keypad = [[1,2,3],[4,5,6],[7,8,9]]
+difficultyLevels = ["Easy","Medium","Hard","Expert",4,3,2,1]
 
 while not finished:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             finished = True
-        if event.type == pygame.KEYDOWN:    # takes keyboard inputs
+        if event.type == pygame.KEYDOWN:    # takes keyboard inputs (dont really know how to make this any shorter)
             if event.key == pygame.K_1:
                 numPressed = 1
                 needToFillIn = True
@@ -91,14 +89,10 @@ while not finished:
                 numPressed = 9
                 needToFillIn = True
 
-    # gets the mouse position
-    mousePos = pygame.mouse.get_pos()
+    mousePos = pygame.mouse.get_pos()    # gets the mouse position
+    gameDisplay.fill(white)    # background
 
-    # background
-    gameDisplay.fill(white)
-
-    # square after they have been clicked (here so the drawing of the big square goes behind the lines)
-    if squareClicked == True:
+    if squareClicked == True:    # square after they have been clicked (here so the drawing of the big square goes behind the lines)
         for i in range(3):
             for j in range(3):
                 if (180*i+30) < coords[0] < (180*i+210) and (180*j+30) < coords[1] < (180*j+210):
@@ -108,219 +102,148 @@ while not finished:
             pygame.draw.rect(gameDisplay,RCSColourSelected,(60*i+32,coords[1],58,58))    # row
         pygame.draw.rect(gameDisplay,squareColourPressed,(coords[0],coords[1],58,58))    # square selected
 
-    # small grid lines
-    for j in range(8):
+    for j in range(8):    # small grid lines
         pygame.draw.line(gameDisplay,smallLineColour,start_pos=(60*j+90,30),end_pos=(60*j+90,571),width=2)
         pygame.draw.line(gameDisplay,smallLineColour,start_pos=(30,60*j+90),end_pos=(571,60*j+90),width=2)
-
-    # big grid lines
-    for i in range(2):
+    for i in range(2):    # big grid lines
         pygame.draw.line(gameDisplay,black,start_pos=(180*(i+1)+30,30),end_pos=(180*(i+1)+30,571),width=2)
         pygame.draw.line(gameDisplay,black,start_pos=(30,180*(i+1)+30),end_pos=(571,180*(i+1)+30),width=2)
 
-    # main box
-    pygame.draw.rect(gameDisplay,black,(30,30,541,541),width=2)    # (dist. from left edge,dist. from top edge,width,height)
+    pygame.draw.rect(gameDisplay,black,(30,30,541,541),width=2)    # draws the main box (here for layering reasons)
 
-    # new game buttons
-    pygame.draw.rect(gameDisplay,otherButtonColour,(621,32,160,50),border_radius=4)
-    if 621 < mousePos[0] < 781 and 32 < mousePos[1] < 82:
-        pygame.draw.rect(gameDisplay,otherButtonColourHover,(621,32,160,50),border_radius=4)
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            difficulty = "Easy"
-            answerGrid = generateCompletedGrid()
-            tempGrid  = formatSudokuGridTo5DFrom2D(answerGrid,3)     # check this line is needed or if the generate grid returns a 2d array ############################################################
-            answerGrid = formatSudokuGridTo3DFrom2D(answerGrid,9)
-            puzzleGrid = createNewPuzzle(tempGrid,4)
-            puzzleGrid = formatSudokuGridTo2DFrom5D(puzzleGrid,3)    # and this line
-            puzzleGrid = formatSudokuGridTo3DFrom2D(puzzleGrid,9)
-            origGrid = copy.deepcopy(puzzleGrid)
-    newEasyGameText = newGameButtonsFont.render("New easy game",False,black)
+    for i in range(2):    # draws the buttons for the new games
+        for j in range(2):
+            pygame.draw.rect(gameDisplay,otherButtonColour,(179*i+621,60*j+32,160,50),border_radius=4)
+            if (179*i+621) < mousePos[0] < (179*i+781) and (60*j+32) < mousePos[1] < (60*j+82):
+                pygame.draw.rect(gameDisplay,otherButtonColourHover,(179*i+621,60*j+32,160,50),border_radius=4)
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    difficulty = difficultyLevels[2*j+i]
+                    answerGrid = generateCompletedGrid()
+                    tempGrid  = formatSudokuGridTo5DFrom2D(answerGrid,3)
+                    answerGrid = formatSudokuGridTo3DFrom2D(answerGrid,9)
+                    puzzleGrid = formatSudokuGridTo3DFrom2D(formatSudokuGridTo2DFrom5D(createNewPuzzle(tempGrid,difficultyLevels[4+(2*j+i)]),3),9)
+                    origGrid = copy.deepcopy(puzzleGrid)                    
+    newEasyGameText = newGameButtonsFont.render("New easy game",False,black)    # adds the text to the buttons (seperate to ensure the text is in the right place)
     gameDisplay.blit(newEasyGameText,(636,42))
-        
-    pygame.draw.rect(gameDisplay,otherButtonColour,(800,32,160,50),border_radius=4)
-    if 800 < mousePos[0] < 960 and 32 < mousePos[1] < 82:
-        pygame.draw.rect(gameDisplay,otherButtonColourHover,(800,32,160,50),border_radius=4)
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            difficulty = "Medium"
-            answerGrid = generateCompletedGrid()
-            tempGrid  = formatSudokuGridTo5DFrom2D(answerGrid,3)
-            answerGrid = formatSudokuGridTo3DFrom2D(answerGrid,9)
-            puzzleGrid = createNewPuzzle(tempGrid,3)
-            puzzleGrid = formatSudokuGridTo2DFrom5D(puzzleGrid,3)
-            puzzleGrid = formatSudokuGridTo3DFrom2D(puzzleGrid,9)
-            origGrid = copy.deepcopy(puzzleGrid)
     newMediumGameText = newGameButtonsFont.render("New medium game",False,black)
     gameDisplay.blit(newMediumGameText,(800,42))
-    
-    pygame.draw.rect(gameDisplay,otherButtonColour,(621,92,160,50),border_radius=4)
-    if 621 < mousePos[0] < 781 and 92 < mousePos[1] < 142:
-        pygame.draw.rect(gameDisplay,otherButtonColourHover,(621,92,160,50),border_radius=4)
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            difficulty = "Hard"
-            answerGrid = generateCompletedGrid()
-            tempGrid  = formatSudokuGridTo5DFrom2D(answerGrid,3)
-            answerGrid = formatSudokuGridTo3DFrom2D(answerGrid,9)
-            puzzleGrid = createNewPuzzle(tempGrid,2)
-            puzzleGrid = formatSudokuGridTo2DFrom5D(puzzleGrid,3)
-            puzzleGrid = formatSudokuGridTo3DFrom2D(puzzleGrid,9)
-            origGrid = copy.deepcopy(puzzleGrid)
     newHardGameText = newGameButtonsFont.render("New hard game",False,black)
     gameDisplay.blit(newHardGameText,(636,102))
-    
-    pygame.draw.rect(gameDisplay,otherButtonColour,(800,92,160,50),border_radius=4)
-    if 800 < mousePos[0] < 960 and 92 < mousePos[1] < 142:
-        pygame.draw.rect(gameDisplay,otherButtonColourHover,(800,92,160,50),border_radius=4)
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            difficulty = "Expert"
-            answerGrid = generateCompletedGrid()
-            tempGrid  = formatSudokuGridTo5DFrom2D(answerGrid,3)
-            answerGrid = formatSudokuGridTo3DFrom2D(answerGrid,9)
-            puzzleGrid = createNewPuzzle(tempGrid,1)
-            puzzleGrid = formatSudokuGridTo2DFrom5D(puzzleGrid,3)
-            puzzleGrid = formatSudokuGridTo3DFrom2D(puzzleGrid,9)
-            origGrid = copy.deepcopy(puzzleGrid)
     newExpertGameText = newGameButtonsFont.render("New expert game",False,black)
     gameDisplay.blit(newExpertGameText,(808,102))
 
-    # difficulty text
-    difficultyInformText = difficultyFont.render("Difficulty:",False,black)
+    difficultyInformText = difficultyFont.render("Difficulty:",False,black)    # displays the difficulty text, at the top
     gameDisplay.blit(difficultyInformText,(720,6))
     difficultyText = difficultyFont.render(difficulty,False,smallLineColour)
     gameDisplay.blit(difficultyText,(795,6))
 
-    # keypad buttons
-    for i in range(3):
+    for i in range(3):    # the key pad (hovering)
         for j in range(3):
             if (113*i+621) < mousePos[0] < (113*i+734) and (96*j+152) < mousePos[1] < (96*j+248):    # for hovering (here so doesn't interfere with the other lines)
                 pygame.draw.rect(gameDisplay,keypadColourHover,(113*i+621,96*j+152,113,96))
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     pygame.draw.rect(gameDisplay,keypadColourPressed,(113*i+621,96*j+152,113,96))
                     needToFillIn = True
-                    numPressed = keypad[j][i]
-
-    for i in range(2):
+                    numPressed = keypad[j][i]    # if the keypad button is pressed, the number (from an array in the same format) is recorded
+    for i in range(2):    # the buttons at the bottom (hovering)
         for j in range(2):
             if (170*i+621) < mousePos[0] < (170*i+791) and (66*j+440) < mousePos[1] < (66*j+506):
                 pygame.draw.rect(gameDisplay,keypadColourHover,(170*i+621,66*j+440,170,66))
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     pygame.draw.rect(gameDisplay,keypadColourPressed,(170*i+621,66*j+440,170,66))
                     if i == 0 and j == 1:
-                        if enableNotes == True:
-                            enableNotes = False
+                        if enableNotes == "On":    # for the toggle buttons, the value is flipped each time theyre pressed
+                            enableNotes = "Off"
                         else:
-                            enableNotes = True
+                            enableNotes = "On"
                     if i == 0 and j == 0:
-                        needToErase = True
+                        needToErase = True     # the other buttons can just be marked as needing to do
                     if i == 1 and j == 1:
-                        if showMistakes == True:
-                            showMistakes = False
+                        if showMistakes == "On":
+                            showMistakes = "Off"
                         else:
-                            showMistakes = True
+                            showMistakes = "On"
                     if i == 1 and j == 0:
-                        needToShowHint = True
-            
-    pygame.draw.rect(gameDisplay,keypadColour,(621,152,339,419),width=2)
+                        needToShowHint = True            
+    pygame.draw.rect(gameDisplay,keypadColour,(621,152,339,419),width=2)    # main keypad box
     for i in range(3):
         pygame.draw.line(gameDisplay,keypadColour,start_pos=(621,96*i+248),end_pos=(960,96*i+248),width=2)     # vertical lines
         pygame.draw.line(gameDisplay,keypadColour,start_pos=(113*i+621,152),end_pos=(113*i+621,440),width=2)    # horizontal lines
-    pygame.draw.line(gameDisplay,keypadColour,start_pos=(621,506),end_pos=(960,506),width=2)
+    pygame.draw.line(gameDisplay,keypadColour,start_pos=(621,506),end_pos=(960,506),width=2)    # buttons at the bottom
     pygame.draw.line(gameDisplay,keypadColour,start_pos=(791,440),end_pos=(791,571),width=2)
-
-    # keypad numbers
     for i in range(3):
         for j in range(3):
             numberToDisplay = str(keypad[i][j])
-            keypadNumbers = keypadNumbersFont.render(numberToDisplay,False,black)
+            keypadNumbers = keypadNumbersFont.render(numberToDisplay,False,black)    # adds numbers to the keypad
             gameDisplay.blit(keypadNumbers,(113*j+657,96*i+165))
-
-    # keypad text
-    eraseButton = keypadTextFont.render("Erase",False,black)
+    eraseButton = keypadTextFont.render("Erase",False,black)   # draws the text for the other keypad buttons
     gameDisplay.blit(eraseButton,(675,455))
     hintButton = keypadTextFont.render("Hint",False,black)
     gameDisplay.blit(hintButton,(850,455))
-    if enableNotes == True:
-        enableNotesButton = keypadTextFont.render("Notes: On",False,black)
-    else:
-        enableNotesButton = keypadTextFont.render("Notes: Off",False,black)
+    enableNotesButton = keypadTextFont.render("Notes: "+enableNotes,False,black)
     gameDisplay.blit(enableNotesButton,(650,520))
-
-    if showMistakes == True:
-        showMistakesButton = showMistakesFont.render("Show Mistakes: On",False,black)
-    else:
-        showMistakesButton = showMistakesFont.render("Show Mistakes: Off",False,black)
+    showMistakesButton = showMistakesFont.render("Show Mistakes: "+showMistakes,False,black)
     gameDisplay.blit(showMistakesButton,(798,526))
 
-    # grid square hovering
     for i in range(9):
         for j in range(9):
             if (60*i+32) < mousePos[0] < (60*i+90) and (60*j+32) < mousePos[1] < (60*j+90):
-                pygame.draw.rect(gameDisplay,squareColourHover,(60*i+32,60*j+32,58,58))
+                pygame.draw.rect(gameDisplay,squareColourHover,(60*i+32,60*j+32,58,58))    # hovering over the grid square
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     squareClicked = True
-                    coords = [(60*i+32),(60*j+32)]
+                    coords = [(60*i+32),(60*j+32)]    # if the grid square is clicked on, its coordinates are marked
         
-    # numbers in the grid
     if puzzleGrid != 0:
-        for i in range(9):
+        for i in range(9):    # draws the numbers in the grid
             for j in range(9):
-                if showMistakes == True:    # show mistakes
-                    if origGrid[j][i][0] == 0:
-                        if puzzleGrid[j][i][0] != 0:
-                            if puzzleGrid[j][i][0] != answerGrid[j][i][0]:
-                                pygame.draw.rect(gameDisplay,wrongSquareColour,(60*i+32,60*j+32,58,58))    # combine all the if statements? ########################################################
+                if showMistakes == "On" and origGrid[j][i][0] == 0 and puzzleGrid[j][i][0] != 0 and puzzleGrid[j][i][0] != answerGrid[j][i][0]:
+                    pygame.draw.rect(gameDisplay,wrongSquareColour,(60*i+32,60*j+32,58,58))
                 if puzzleGrid[j][i][0] == 0:
-                    numberToShow = ""
+                    numberToShow = ""     # nothing is drawn in the square if it is being marked as empty 
                 else:
                     numberToShow = str(puzzleGrid[j][i][0])
                 if origGrid[j][i][0] == 0:
-                    gridNumbers = gridNumbersFont.render(numberToShow,False,filledInNumberColour)
+                    gridNumbers = gridNumbersFont.render(numberToShow,False,filledInNumberColour)    # the numbers the user fills in are coloured in blue
                 else:
-                    gridNumbers = gridNumbersFont.render(numberToShow,False,black)
+                    gridNumbers = gridNumbersFont.render(numberToShow,False,black)    # the numbers given are coloured in black
                 gameDisplay.blit(gridNumbers,(60*i+48,60*j+34))
-                if len(puzzleGrid[j][i]) > 1 and puzzleGrid[j][i][0] == 0:   # notes
-                    toDisplay = [0,0,0,0,0,0,0,0,0]
+                if len(puzzleGrid[j][i]) > 1 and puzzleGrid[j][i][0] == 0:   # displays the notes if there are any
+                    toDisplay = [0,0,0,0,0,0,0,0,0]    # this is just to make it display nicer
                     for m in range(len(puzzleGrid[j][i])):
-                        toDisplay[puzzleGrid[j][i][m]-1] = puzzleGrid[j][i][m]
+                        toDisplay[puzzleGrid[j][i][m]-1] = puzzleGrid[j][i][m]    # replaces a zero with the note in the correct place
                     for k in range(3):
                         for l in range(3):
-                            if toDisplay[3*k+l] != 0:
+                            if toDisplay[3*k+l] != 0:    # having the toDisplay array means for instance 5 will always be displayed in the middle, 9 in the bottom right etc etc
                                 numberToShow = str(toDisplay[3*k+l])
                                 noteNumbers = notesFont.render(numberToShow,False,filledInNumberColour)
                                 gameDisplay.blit(noteNumbers,(60*i+30+(20*l+5),60*j+30+(20*k-1)))
                                 
-    # fill in squares
-    if enableNotes == False:
+    if enableNotes == "Off":    # if notes are off, the square will be filled in
         if needToFillIn == True:
-            if coords != 0 and puzzleGrid != 0:
-                if origGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)][0] == 0:
-                    puzzleGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)][0] = numPressed
+            if coords != 0 and puzzleGrid != 0 and origGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)][0] == 0:
+                puzzleGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)][0] = numPressed     # the 0 marking the square as not filled in is replaced by the number pressed
             needToFillIn = False
     else:
         if needToFillIn == True:
-            if coords != 0 and puzzleGrid != 0:
-                if puzzleGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)][0] == 0:
-                    if numPressed in puzzleGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)]:
-                        puzzleGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)].remove(numPressed)
-                    else:
-                        puzzleGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)].append(numPressed)
+            if coords != 0 and puzzleGrid != 0 and puzzleGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)][0] == 0:
+                if numPressed in puzzleGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)]:
+                    puzzleGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)].remove(numPressed)    # if the number is pressed a second time, it will be removed (so user can remove a note by clicking the number again)
+                else:
+                    puzzleGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)].append(numPressed)    # if notes are on, any numbers pressed will be appended on, indicating notes
             needToFillIn = False
 
-    # erase numbers
     if needToErase == True:
-        if coords != 0 and puzzleGrid != 0:
-            if origGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)][0] == 0:
-                puzzleGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)].clear()
-                puzzleGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)].append(0)
+        if coords != 0 and puzzleGrid != 0 and origGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)][0] == 0:     # only erases filled in numbers
+            puzzleGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)].clear()    # cant just set it equal to 0 as the notes would not be erased
+            puzzleGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)].append(0)
         needToErase = False
 
-    # show hint
     if needToShowHint == True:
-        if coords != 0 and puzzleGrid != 0:
-            if origGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)][0] == 0:
-                puzzleGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)][0] = answerGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)][0]
+        if coords != 0 and puzzleGrid != 0 and origGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)][0] == 0:
+            puzzleGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)][0] = answerGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)][0]    # gets the number for the square from the answer array if hint is needed
         needToShowHint = False
             
-    pygame.display.flip()
+    pygame.display.flip()    # updates the display
     time.sleep(0.082)    # time delay does hinder the visual performance ever so slightly but it was necessary for the buttons to function correctly
 
 pygame.quit()
@@ -330,5 +253,7 @@ pygame.quit()
 timer?
 number of hints on finishing screen?
 finishing screen
-make user keyboard inputs valid too?
+try add undo?
+show answer
+restart
 '''
