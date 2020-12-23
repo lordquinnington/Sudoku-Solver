@@ -62,6 +62,34 @@ while not finished:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             finished = True
+        if event.type == pygame.KEYDOWN:    # takes keyboard inputs
+            if event.key == pygame.K_1:
+                numPressed = 1
+                needToFillIn = True
+            if event.key == pygame.K_2:
+                numPressed = 2
+                needToFillIn = True
+            if event.key == pygame.K_3:
+                numPressed = 3
+                needToFillIn = True
+            if event.key == pygame.K_4:
+                numPressed = 4
+                needToFillIn = True
+            if event.key == pygame.K_5:
+                numPressed = 5
+                needToFillIn = True
+            if event.key == pygame.K_6:
+                numPressed = 6
+                needToFillIn = True
+            if event.key == pygame.K_7:
+                numPressed = 7
+                needToFillIn = True
+            if event.key == pygame.K_8:
+                numPressed = 8
+                needToFillIn = True
+            if event.key == pygame.K_9:
+                numPressed = 9
+                needToFillIn = True
 
     # gets the mouse position
     mousePos = pygame.mouse.get_pos()
@@ -293,7 +321,6 @@ while not finished:
         needToShowHint = False
             
     pygame.display.flip()
-    #clock.tick(60)
     time.sleep(0.082)    # time delay does hinder the visual performance ever so slightly but it was necessary for the buttons to function correctly
 
 pygame.quit()
@@ -303,5 +330,5 @@ pygame.quit()
 timer?
 number of hints on finishing screen?
 finishing screen
-notes
+make user keyboard inputs valid too?
 '''
