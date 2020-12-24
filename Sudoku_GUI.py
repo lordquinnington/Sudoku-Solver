@@ -25,12 +25,16 @@ def findTimeTaken(timeTaken):
 def flipValue(prevValue):
     if prevValue == "On":
         return "Off"
-    else:
-        return "On"
+    return "On"
+
+def flipBooleanValue(prevValue):
+    if prevValue == True:
+        return False
+    return True
 
 def runMainProgramGUI():
     pygame.init()
-    gameDisplay = pygame.display.set_mode((1000,601))
+    gameDisplay = pygame.display.set_mode((1000,687))
     pygame.display.set_caption("Sudoku by Mattyou Quinn")
 
     white = (255,255,255)    # use for backgroundColour, mainButtonColour and squareColour
@@ -42,9 +46,11 @@ def runMainProgramGUI():
     keypadColourPressed = (200,200,200)
     otherButtonColour = (65,150,240)    # for the new games buttons etc
     otherButtonColourHover = (95,170,255)
+    otherButtonColourPressed = (60,140,225)
     smallLineColour = (170,170,170)
     filledInNumberColour = (30,134,232)
     wrongSquareColour = (255,135,135)
+    answerColour = (26,217,33)
 
     gridNumbersFont = pygame.font.SysFont('lucidasansregular',43)
     newGameButtonsFont = pygame.font.SysFont('arial',23)
@@ -62,6 +68,9 @@ def runMainProgramGUI():
     needToFillIn = False
     needToErase = False
     needToShowHint = False
+    undoMove = False
+    restartGame = False
+    showAnswer = False
     puzzleGrid = 0
     coords = 0
     hintsShown = 0
@@ -72,6 +81,7 @@ def runMainProgramGUI():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 finished = True
+                pressedQuit = True
             if event.type == pygame.KEYDOWN:    # takes keyboard inputs (dont really know how to make this any shorter)
                 if event.key == pygame.K_1:
                     numPressed = 1
@@ -104,10 +114,16 @@ def runMainProgramGUI():
                     needToShowHint = True
                 if event.key == pygame.K_e:
                     needToErase = True
+                if event.key == pygame.K_u:
+                    undoMove = True
+                if event.key == pygame.K_r:
+                    restartGame = True
                 if event.key == pygame.K_n:
                     enableNotes = flipValue(enableNotes)
                 if event.key == pygame.K_m:
                     showMistakes = flipValue(showMistakes)
+                if event.key == pygame.K_a:
+                    showAnswer = flipBooleanValue(showAnswer)
                     
         mousePos = pygame.mouse.get_pos()    # gets the mouse position
         gameDisplay.fill(white)    # background
@@ -137,6 +153,7 @@ def runMainProgramGUI():
                 if (179*i+621) < mousePos[0] < (179*i+781) and (60*j+32) < mousePos[1] < (60*j+82):
                     pygame.draw.rect(gameDisplay,otherButtonColourHover,(179*i+621,60*j+32,160,50),border_radius=4)
                     if event.type == pygame.MOUSEBUTTONDOWN:
+                        pygame.draw.rect(gameDisplay,otherButtonColourPressed,(179*i+621,60*j+32,160,50),border_radius=4)
                         difficulty = difficultyLevels[2*j+i]
                         answerGrid = generateCompletedGrid()
                         tempGrid  = formatSudokuGridTo5DFrom2D(answerGrid,3)
@@ -167,26 +184,26 @@ def runMainProgramGUI():
                     if event.type == pygame.MOUSEBUTTONDOWN:
                         pygame.draw.rect(gameDisplay,keypadColourPressed,(170*i+621,66*j+440,170,66))
                         if i == 0 and j == 1:
-                            enableNotes = flipValue(enableNotes)    # for the toggle buttons, the value is flipped each time theyre pressed
+                            undoMove = True
                         if i == 0 and j == 0:
                             needToErase = True     # the other buttons can just be marked as needing to do
                         if i == 1 and j == 1:
-                            showMistakes = flipValue(showMistakes)
+                            restartGame = True
                         if i == 1 and j == 0:
                             needToShowHint = True            
         pygame.draw.rect(gameDisplay,keypadColour,(621,152,339,419),width=2)    # main keypad box
         for i in range(3):
             pygame.draw.line(gameDisplay,keypadColour,start_pos=(621,96*i+248),end_pos=(960,96*i+248),width=2)     # vertical lines
             pygame.draw.line(gameDisplay,keypadColour,start_pos=(113*i+621,152),end_pos=(113*i+621,440),width=2)    # horizontal lines
-        pygame.draw.line(gameDisplay,keypadColour,start_pos=(621,506),end_pos=(960,506),width=2)    # buttons at the bottom
+        pygame.draw.line(gameDisplay,keypadColour,start_pos=(621,506),end_pos=(960,506),width=2)    # buttons at the bottom of the keypad
         pygame.draw.line(gameDisplay,keypadColour,start_pos=(791,440),end_pos=(791,571),width=2)
         for i in range(3):
             for j in range(3):
                 gameDisplay.blit(keypadNumbersFont.render(str(keypad[i][j]),False,black),(113*j+657,96*i+165))    # adds numbers to the keypad       
         gameDisplay.blit(keypadTextFont.render("Erase",False,black),(675,455))    # draws the text for the other keypad buttons
         gameDisplay.blit(keypadTextFont.render("Hint",False,black),(850,455))
-        gameDisplay.blit(keypadTextFont.render("Notes: "+enableNotes,False,black),(650,520))
-        gameDisplay.blit(showMistakesFont.render("Show Mistakes: "+showMistakes,False,black),(798,526))
+        gameDisplay.blit(keypadTextFont.render("Undo",False,black),(677,520))
+        gameDisplay.blit(keypadTextFont.render("Restart",False,black),(837,520))
 
         for i in range(9):
             for j in range(9):
@@ -202,13 +219,24 @@ def runMainProgramGUI():
                     if showMistakes == "On" and origGrid[j][i][0] == 0 and puzzleGrid[j][i][0] != 0 and puzzleGrid[j][i][0] != answerGrid[j][i][0]:
                         pygame.draw.rect(gameDisplay,wrongSquareColour,(60*i+32,60*j+32,58,58))
                     if puzzleGrid[j][i][0] == 0:
-                        numberToShow = ""     # nothing is drawn in the square if it is being marked as empty 
+                        if showAnswer == False:
+                            numberToShow = ""     # nothing is drawn in the square if it is being marked as empty
+                        else:
+                            numberToShow = str(answerGrid[j][i][0])
                     else:
                         numberToShow = str(puzzleGrid[j][i][0])
-                    if origGrid[j][i][0] == 0:
-                        gridNumbers = gridNumbersFont.render(numberToShow,False,filledInNumberColour)    # the numbers the user fills in are coloured in blue
+                    if showAnswer == True:
+                        if puzzleGrid[j][i][0] == 0:
+                            gridNumbers = gridNumbersFont.render(numberToShow,False,answerColour)    # if the show answer is toggled, the correct number will also be displayed in green
+                        elif origGrid[j][i][0] == 0:
+                            gridNumbers = gridNumbersFont.render(numberToShow,False,filledInNumberColour)
+                        else:
+                            gridNumbers = gridNumbersFont.render(numberToShow,False,black)
                     else:
-                        gridNumbers = gridNumbersFont.render(numberToShow,False,black)    # the numbers given are coloured in black
+                        if origGrid[j][i][0] == 0:
+                            gridNumbers = gridNumbersFont.render(numberToShow,False,filledInNumberColour)    # the numbers the user fills in are coloured in blue
+                        else:
+                            gridNumbers = gridNumbersFont.render(numberToShow,False,black)    # the numbers given are coloured in black
                     gameDisplay.blit(gridNumbers,(60*i+48,60*j+34))
                     if len(puzzleGrid[j][i]) > 1 and puzzleGrid[j][i][0] == 0:   # displays the notes if there are any
                         toDisplay = [0,0,0,0,0,0,0,0,0]    # this is just to make it display nicer
@@ -220,6 +248,25 @@ def runMainProgramGUI():
                                     numberToShow = str(toDisplay[3*k+l])
                                     noteNumbers = notesFont.render(numberToShow,False,filledInNumberColour)
                                     gameDisplay.blit(noteNumbers,(60*i+30+(20*l+5),60*j+30+(20*k-1)))
+
+        for i in range(3):    # draws the buttons at the very bottom of the screen
+            pygame.draw.rect(gameDisplay,keypadColour,(185*i+421,591,170,66),width=2)
+            if (185*i+421) < mousePos[0] < (185*i+591) and 591 < mousePos[1] < 657:
+                pygame.draw.rect(gameDisplay,lightGrey,(185*i+423,593,167,63))
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    pygame.draw.rect(gameDisplay,keypadColourPressed,(185*i+423,593,167,63))     # have to be smaller squares so they dont over lap and are layered correctly
+                    if i == 0:
+                        showAnswer = flipBooleanValue(showAnswer)
+                    if i == 1:
+                        enableNotes = flipValue(enableNotes)
+                    if i == 2:
+                        showMistakes = flipValue(showMistakes)
+        if showAnswer == False:
+            gameDisplay.blit(keypadTextFont.render("Show Answer",False,black),(432,607))
+        else:
+            gameDisplay.blit(keypadTextFont.render("Hide Answer",False,black),(432,607))
+        gameDisplay.blit(keypadTextFont.render("Notes: "+enableNotes,False,black),(637,607))
+        gameDisplay.blit(showMistakesFont.render("Show Mistakes: "+showMistakes,False,black),(798,612))
                                     
         if enableNotes == "Off":    # if notes are off, the square will be filled in
             if needToFillIn == True:
@@ -246,6 +293,11 @@ def runMainProgramGUI():
                 puzzleGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)][0] = answerGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)][0]    # gets the number for the square from the answer array if hint is needed
                 hintsShown += 1
             needToShowHint = False
+
+        if restartGame == True:
+            if puzzleGrid != 0:
+                puzzleGrid = copy.deepcopy(origGrid)    # if the user wants to restart, the puzzle grid will just be set to the original grid
+            restartGame = False
         
         if puzzleGrid != 0:
             counter = 0
@@ -255,12 +307,15 @@ def runMainProgramGUI():
                         counter += 1
             if counter == 81:
                 finishTime = time.time()
+                pressedQuit = False
                 finished = True
                 
         pygame.display.flip()    # updates the display
         time.sleep(0.082)    # time delay does hinder the visual performance ever so slightly but it was necessary for the buttons to function correctly
 
     pygame.quit()
+    if pressedQuit == True:
+        return None,None
     return hintsShown, int(round(finishTime - startTime,0))
 
 def runFinishingScreenGUI(hintsShown,hours,minutes,seconds):
@@ -317,33 +372,31 @@ def runFinishingScreenGUI(hintsShown,hours,minutes,seconds):
     pygame.quit()
     return continuePlaying
 
-##playAgain = True
-##while playAgain:
-##    #hintsShown, timeTaken = runMainProgramGUI()
-##    hintsShown = 69
-##    timeTaken = 6666666666669
-##    hrs, mins, secs = findTimeTaken(timeTaken)
-##    playAgain = runFinishingScreenGUI(str(hintsShown),str(hrs),str(mins),str(secs))
-#runFinishingScreenGUI()#
-a,b = runMainProgramGUI()#
+playAgain = True
+while playAgain:
+    hintsShown, timeTaken = runMainProgramGUI()
+    #hintsShown = 69
+    #timeTaken = 6666666666669
+    if hintsShown == None or timeTaken == None:
+        playAgain = False
+    else:
+        hrs, mins, secs = findTimeTaken(timeTaken)
+        playAgain = runFinishingScreenGUI(str(hintsShown),str(hrs),str(mins),str(secs))
+#a = runFinishingScreenGUI()#
+#a,b = runMainProgramGUI()#
 
 
 print("thank you for doing sudoku-y stuff")
 
 
-## pressing the cross takes you to the finishing screen NOT just quitting ###########################################################################################################
 ## the time delay happens before the number is filled in when completed so the box remains empty until it goes to the finishing screen ##############################################
 ## prints an error if you use the cross (for finishtime referenced before assignment) doesnt affect functionality but not ideal #####################################################
 
 '''
 try add undo?
-show answer
-restart
 keyboard shortcuts? h == hint, e = erase etc
-make new games buttons flash when pressed
 combine the 2 text display lines?
 navigate with arrow keys?
 could put the keyboard shortcuts at the bottom with the extra buttons to fill in the space?
 perhaps swap the toggle buttons for the restart and undo and move the toggle buttons to the bottom with the other ones?
-write a function to flip the on/off value?
 '''
