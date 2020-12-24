@@ -67,6 +67,7 @@ def runMainProgramGUI():
     squareClicked = False
     needToFillIn = False
     needToErase = False
+    solvePls = False
     needToShowHint = False
     undoMove = False
     restartGame = False
@@ -118,6 +119,8 @@ def runMainProgramGUI():
                     undoMove = True
                 if event.key == pygame.K_r:
                     restartGame = True
+                if event.key == pygame.K_s:
+                    solvePls = True
                 if event.key == pygame.K_n:
                     enableNotes = flipValue(enableNotes)
                 if event.key == pygame.K_m:
@@ -295,6 +298,11 @@ def runMainProgramGUI():
                 hintsShown += 1
             needToShowHint = False
 
+        if solvePls == True:
+            if puzzleGrid != 0:
+                puzzleGrid = copy.deepcopy(answerGrid)
+            solvePls = False
+
         if restartGame == True:
             if puzzleGrid != 0:
                 puzzleGrid = copy.deepcopy(origGrid)    # if the user wants to restart, the puzzle grid will just be set to the original grid
@@ -381,10 +389,6 @@ while playAgain:
     else:
         hrs, mins, secs = findTimeTaken(timeTaken)
         playAgain = runFinishingScreenGUI(str(hintsShown),str(hrs),str(mins),str(secs))
-#a = runFinishingScreenGUI()#
-#a,b = runMainProgramGUI()#
-
-
 print("thank you for doing sudoku-y stuff")
 
 
