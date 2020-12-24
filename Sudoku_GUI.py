@@ -160,6 +160,7 @@ def runMainProgramGUI():
                         answerGrid = formatSudokuGridTo3DFrom2D(answerGrid,9)
                         puzzleGrid = formatSudokuGridTo3DFrom2D(formatSudokuGridTo2DFrom5D(createNewPuzzle(tempGrid,difficultyLevels[4+(2*j+i)]+5),3),9) # remove the +5 ############################
                         origGrid = copy.deepcopy(puzzleGrid)
+                        showAnswer = False
                         startTime = time.time()
         gameDisplay.blit(newGameButtonsFont.render("New easy game",False,black),(636,42))    # adds the text to the buttons (seperate to ensure the text is in the right place)
         gameDisplay.blit(newGameButtonsFont.render("New medium game",False,black),(800,42))
@@ -238,7 +239,7 @@ def runMainProgramGUI():
                         else:
                             gridNumbers = gridNumbersFont.render(numberToShow,False,black)    # the numbers given are coloured in black
                     gameDisplay.blit(gridNumbers,(60*i+48,60*j+34))
-                    if len(puzzleGrid[j][i]) > 1 and puzzleGrid[j][i][0] == 0:   # displays the notes if there are any
+                    if len(puzzleGrid[j][i]) > 1 and puzzleGrid[j][i][0] == 0 and showAnswer == False:   # displays the notes if there are any
                         toDisplay = [0,0,0,0,0,0,0,0,0]    # this is just to make it display nicer
                         for m in range(len(puzzleGrid[j][i])):
                             toDisplay[puzzleGrid[j][i][m]-1] = puzzleGrid[j][i][m]    # replaces a zero with the note in the correct place
@@ -275,7 +276,7 @@ def runMainProgramGUI():
                 needToFillIn = False
         else:
             if needToFillIn == True:
-                if coords != 0 and puzzleGrid != 0 and puzzleGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)][0] == 0:
+                if coords != 0 and puzzleGrid != 0 and puzzleGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)][0] == 0 and showAnswer == False:
                     if numPressed in puzzleGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)]:
                         puzzleGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)].remove(numPressed)    # if the number is pressed a second time, it will be removed (so user can remove a note by clicking the number again)
                     else:
@@ -375,8 +376,6 @@ def runFinishingScreenGUI(hintsShown,hours,minutes,seconds):
 playAgain = True
 while playAgain:
     hintsShown, timeTaken = runMainProgramGUI()
-    #hintsShown = 69
-    #timeTaken = 6666666666669
     if hintsShown == None or timeTaken == None:
         playAgain = False
     else:
@@ -395,8 +394,6 @@ print("thank you for doing sudoku-y stuff")
 '''
 try add undo?
 keyboard shortcuts? h == hint, e = erase etc
-combine the 2 text display lines?
 navigate with arrow keys?
 could put the keyboard shortcuts at the bottom with the extra buttons to fill in the space?
-perhaps swap the toggle buttons for the restart and undo and move the toggle buttons to the bottom with the other ones?
 '''
