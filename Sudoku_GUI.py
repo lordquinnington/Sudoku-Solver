@@ -158,7 +158,7 @@ def runMainProgramGUI():
                         answerGrid = generateCompletedGrid()
                         tempGrid  = formatSudokuGridTo5DFrom2D(answerGrid,3)
                         answerGrid = formatSudokuGridTo3DFrom2D(answerGrid,9)
-                        puzzleGrid = formatSudokuGridTo3DFrom2D(formatSudokuGridTo2DFrom5D(createNewPuzzle(tempGrid,difficultyLevels[4+(2*j+i)]+5),3),9) # remove the +5 ############################
+                        puzzleGrid = formatSudokuGridTo3DFrom2D(formatSudokuGridTo2DFrom5D(createNewPuzzle(tempGrid,difficultyLevels[4+(2*j+i)]),3),9)
                         origGrid = copy.deepcopy(puzzleGrid)
                         showAnswer = False
                         startTime = time.time()
