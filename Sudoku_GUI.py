@@ -86,6 +86,7 @@ def runMainProgramGUI():
     puzzleGrid = 0
     coords = 0
     hintsShown = 0
+    finishGrid = 0    # so the grid actually fills in the last square instead of going straight to the finsihing screen
     keypad = [[1,2,3],[4,5,6],[7,8,9]]
     difficultyLevels = ["Easy","Medium","Hard","Expert",4,3,2,1]
 
@@ -412,8 +413,11 @@ def runMainProgramGUI():
                         counter += 1
             if counter == 81:
                 finishTime = time.time()
-                pressedQuit = False
-                finished = True
+                finishGrid += 1
+                if finishGrid == 4:    # just so the last number is actually displayed (makes the screen update itself with the last number before going onto quitting)
+                    time.sleep(1.5)
+                    pressedQuit = False
+                    finished = True
                 
         pygame.display.flip()    # updates the display
         time.sleep(0.082)    # time delay does hinder the visual performance ever so slightly but it was necessary for the buttons to function correctly
@@ -488,7 +492,6 @@ while playAgain:
 print("thank you for doing sudoku-y stuff")
 
 ##################################################################################### problems ######################################################################################
-## the time delay happens before the number is filled in when completed so the box remains empty until it goes to the finishing screen
 
 '''        features to add
 '''
