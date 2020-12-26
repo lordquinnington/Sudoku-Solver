@@ -17,6 +17,13 @@ def formatSudokuGridTo3DFrom2D(gridArray,size):
         gridArray3D.append(tempArray1)
     return gridArray3D
 
+def addUndoArray(gridArray3D,size):
+    for i in range(size):
+        for j in range(size):
+            if gridArray3D[i][j][0] == 0:
+                gridArray3D[i][j].append([])
+    return gridArray3D
+
 def findTimeTaken(timeTaken):
     mins,secs = divmod(timeTaken,60)
     hrs,mins = divmod(mins,60)
@@ -72,6 +79,10 @@ def runMainProgramGUI():
     undoMove = False
     restartGame = False
     showAnswer = False
+    moveSquareUp = False
+    moveSquareDown = False
+    moveSquareLeft = False
+    moveSquareRight = False
     puzzleGrid = 0
     coords = 0
     hintsShown = 0
@@ -84,31 +95,31 @@ def runMainProgramGUI():
                 finished = True
                 pressedQuit = True
             if event.type == pygame.KEYDOWN:    # takes keyboard inputs (dont really know how to make this any shorter)
-                if event.key == pygame.K_1:
+                if event.key == pygame.K_1 or event.key == pygame.K_KP1:
                     numPressed = 1
                     needToFillIn = True
-                if event.key == pygame.K_2:
+                if event.key == pygame.K_2 or event.key == pygame.K_KP2:
                     numPressed = 2
                     needToFillIn = True
-                if event.key == pygame.K_3:
+                if event.key == pygame.K_3 or event.key == pygame.K_KP3:
                     numPressed = 3
                     needToFillIn = True
-                if event.key == pygame.K_4:
+                if event.key == pygame.K_4 or event.key == pygame.K_KP4:
                     numPressed = 4
                     needToFillIn = True
-                if event.key == pygame.K_5:
+                if event.key == pygame.K_5 or event.key == pygame.K_KP5:
                     numPressed = 5
                     needToFillIn = True
-                if event.key == pygame.K_6:
+                if event.key == pygame.K_6 or event.key == pygame.K_KP6:
                     numPressed = 6
                     needToFillIn = True
-                if event.key == pygame.K_7:
+                if event.key == pygame.K_7 or event.key == pygame.K_KP7:
                     numPressed = 7
                     needToFillIn = True
-                if event.key == pygame.K_8:
+                if event.key == pygame.K_8 or event.key == pygame.K_KP8:
                     numPressed = 8
                     needToFillIn = True
-                if event.key == pygame.K_9:
+                if event.key == pygame.K_9 or event.key == pygame.K_KP9:
                     numPressed = 9
                     needToFillIn = True
                 if event.key == pygame.K_h:    # keyboard shortcuts
@@ -121,6 +132,14 @@ def runMainProgramGUI():
                     restartGame = True
                 if event.key == pygame.K_s:
                     solvePls = True
+                if event.key == pygame.K_UP:
+                    moveSquareUp = True
+                if event.key == pygame.K_DOWN:
+                    moveSquareDown = True
+                if event.key == pygame.K_LEFT:
+                    moveSquareLeft = True
+                if event.key == pygame.K_RIGHT:
+                    moveSquareRight = True
                 if event.key == pygame.K_n:
                     enableNotes = flipValue(enableNotes)
                 if event.key == pygame.K_m:
@@ -162,8 +181,10 @@ def runMainProgramGUI():
                         tempGrid  = formatSudokuGridTo5DFrom2D(answerGrid,3)
                         answerGrid = formatSudokuGridTo3DFrom2D(answerGrid,9)
                         puzzleGrid = formatSudokuGridTo3DFrom2D(formatSudokuGridTo2DFrom5D(createNewPuzzle(tempGrid,difficultyLevels[4+(2*j+i)]),3),9)
+                        puzzleGrid = addUndoArray(puzzleGrid,9)
                         origGrid = copy.deepcopy(puzzleGrid)
                         showAnswer = False
+                        undoPos = 0
                         startTime = time.time()
         gameDisplay.blit(newGameButtonsFont.render("New easy game",False,black),(636,42))    # adds the text to the buttons (seperate to ensure the text is in the right place)
         gameDisplay.blit(newGameButtonsFont.render("New medium game",False,black),(800,42))
@@ -172,6 +193,21 @@ def runMainProgramGUI():
 
         gameDisplay.blit(difficultyFont.render("Difficulty:",False,black),(720,6))    # displays the difficulty text, at the top
         gameDisplay.blit(difficultyFont.render(difficulty,False,smallLineColour),(795,6))
+
+        gameDisplay.blit(difficultyFont.render("Erase:",False,black),(30,593))
+        gameDisplay.blit(difficultyFont.render("E",False,smallLineColour),(78,593))
+        gameDisplay.blit(difficultyFont.render("Undo:",False,black),(30,613))
+        gameDisplay.blit(difficultyFont.render("U",False,smallLineColour),(76,613))
+        gameDisplay.blit(difficultyFont.render("Toggle Notes:",False,black),(30,633))
+        gameDisplay.blit(difficultyFont.render("N",False,smallLineColour),(133,633))
+        gameDisplay.blit(difficultyFont.render("Show/Hide Answer:",False,black),(30,653))
+        gameDisplay.blit(difficultyFont.render("A",False,smallLineColour),(172,653))
+        gameDisplay.blit(difficultyFont.render("Hint:",False,black),(200,593))
+        gameDisplay.blit(difficultyFont.render("H",False,smallLineColour),(238,593))
+        gameDisplay.blit(difficultyFont.render("Restart:",False,black),(200,613))
+        gameDisplay.blit(difficultyFont.render("R",False,smallLineColour),(258,613))
+        gameDisplay.blit(difficultyFont.render("Toggle Show Mistakes:",False,black),(200,633))
+        gameDisplay.blit(difficultyFont.render("M",False,smallLineColour),(366,633))
 
         for i in range(3):    # the key pad (hovering)
             for j in range(3):
@@ -244,7 +280,7 @@ def runMainProgramGUI():
                     gameDisplay.blit(gridNumbers,(60*i+48,60*j+34))
                     if len(puzzleGrid[j][i]) > 1 and puzzleGrid[j][i][0] == 0 and showAnswer == False:   # displays the notes if there are any
                         toDisplay = [0,0,0,0,0,0,0,0,0]    # this is just to make it display nicer
-                        for m in range(len(puzzleGrid[j][i])):
+                        for m in range(2,len(puzzleGrid[j][i])):
                             toDisplay[puzzleGrid[j][i][m]-1] = puzzleGrid[j][i][m]    # replaces a zero with the note in the correct place
                         for k in range(3):
                             for l in range(3):
@@ -275,7 +311,19 @@ def runMainProgramGUI():
         if enableNotes == "Off":    # if notes are off, the square will be filled in
             if needToFillIn == True:
                 if coords != 0 and puzzleGrid != 0 and origGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)][0] == 0:
+                    undoPos += 1
+                    prevNumber = 0
+                    if puzzleGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)][0] != 0:
+                        prevNumber = puzzleGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)][0]
                     puzzleGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)][0] = numPressed     # the 0 marking the square as not filled in is replaced by the number pressed
+                    if prevNumber != 0:
+                        puzzleGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)][1].append(undoPos)
+                        puzzleGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)][1].append("erasedMainNumber")
+                        puzzleGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)][1].append(prevNumber)
+                        undoPos += 1
+                    puzzleGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)][1].append(undoPos)
+                    puzzleGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)][1].append("filledInMainNumber")
+                    puzzleGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)][1].append(numPressed)
                 needToFillIn = False
         else:
             if needToFillIn == True:
@@ -288,8 +336,14 @@ def runMainProgramGUI():
 
         if needToErase == True:
             if coords != 0 and puzzleGrid != 0 and origGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)][0] == 0:     # only erases filled in numbers
+                undoPos += 1
+                puzzleGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)][1].append(undoPos)
+                puzzleGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)][1].append("erasedMainNumber")
+                puzzleGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)][1].append(puzzleGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)][0])
+                squareUndoArray = copy.deepcopy(puzzleGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)][1])
                 puzzleGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)].clear()    # cant just set it equal to 0 as the notes would not be erased
                 puzzleGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)].append(0)
+                puzzleGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)].append(squareUndoArray)
             needToErase = False
 
         if needToShowHint == True:
@@ -307,6 +361,48 @@ def runMainProgramGUI():
             if puzzleGrid != 0:
                 puzzleGrid = copy.deepcopy(origGrid)    # if the user wants to restart, the puzzle grid will just be set to the original grid
             restartGame = False
+
+        if moveSquareUp == True:
+            if coords != 0 and 0 < int((coords[1]-32)/60) <= 8:
+                coords[1] = coords[1] - 60
+            moveSquareUp = False
+
+        if moveSquareDown == True:
+            if coords != 0 and 0 <= int((coords[1]-32)/60) < 8:
+                coords[1] = coords[1] + 60
+            moveSquareDown = False
+
+        if moveSquareLeft == True:
+            if coords != 0 and 0 < int((coords[0]-32)/60) <= 8:
+                coords[0] = coords[0] - 60
+            moveSquareLeft = False
+
+        if moveSquareRight == True:
+            if coords != 0 and 0 <= int((coords[0]-32)/60) < 8:
+                coords[0] = coords[0] + 60
+            moveSquareRight = False
+
+        if undoMove == True:
+            if coords != 0 and puzzleGrid != 0 and undoPos > 0:
+                lastChanged = [0]
+                for i in range(9):
+                    for j in range(9):
+                        if origGrid[j][i][0] == 0:
+                            for k in range(0,len(puzzleGrid[j][i][1]),3):
+                                if puzzleGrid[j][i][1][k] > lastChanged[0]:
+                                    lastChanged.clear()
+                                    lastChanged.append(puzzleGrid[j][i][1][k])
+                                    lastChanged.append(j)
+                                    lastChanged.append(i)
+                                    lastChanged.append(k)
+                if puzzleGrid[lastChanged[1]][lastChanged[2]][1][lastChanged[3]+1] == "erasedMainNumber":
+                    puzzleGrid[lastChanged[1]][lastChanged[2]][0] = puzzleGrid[lastChanged[1]][lastChanged[2]][1][lastChanged[3]+2]
+                elif puzzleGrid[lastChanged[1]][lastChanged[2]][1][lastChanged[3]+1] == "filledInMainNumber":
+                    puzzleGrid[lastChanged[1]][lastChanged[2]][0] = 0
+                for i in range(3):
+                    puzzleGrid[lastChanged[1]][lastChanged[2]][1].pop(lastChanged[3])
+                undoPos -= 1
+            undoMove = False
         
         if puzzleGrid != 0:
             counter = 0
@@ -391,13 +487,10 @@ while playAgain:
         playAgain = runFinishingScreenGUI(str(hintsShown),str(hrs),str(mins),str(secs))
 print("thank you for doing sudoku-y stuff")
 
+##################################################################################### problems ######################################################################################
+## the time delay happens before the number is filled in when completed so the box remains empty until it goes to the finishing screen
+## you cant undo a number if you dont erase it, so if you just update the square without erasing it, it wont count on the undo
 
-## the time delay happens before the number is filled in when completed so the box remains empty until it goes to the finishing screen ##############################################
-## prints an error if you use the cross (for finishtime referenced before assignment) doesnt affect functionality but not ideal #####################################################
-
-'''
+'''        features to add
 try add undo?
-keyboard shortcuts? h == hint, e = erase etc
-navigate with arrow keys?
-could put the keyboard shortcuts at the bottom with the extra buttons to fill in the space?
 '''
