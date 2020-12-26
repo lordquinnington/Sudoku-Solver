@@ -209,6 +209,8 @@ def runMainProgramGUI():
         gameDisplay.blit(difficultyFont.render("R",False,smallLineColour),(258,613))
         gameDisplay.blit(difficultyFont.render("Toggle Show Mistakes:",False,black),(200,633))
         gameDisplay.blit(difficultyFont.render("M",False,smallLineColour),(366,633))
+        gameDisplay.blit(difficultyFont.render("Navigate:",False,black),(200,653))
+        gameDisplay.blit(difficultyFont.render("Arrow Keys",False,smallLineColour),(269,653))
 
         for i in range(3):    # the key pad (hovering)
             for j in range(3):
