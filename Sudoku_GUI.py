@@ -316,7 +316,7 @@ def runMainProgramGUI():
                     if puzzleGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)][0] != 0:
                         prevNumber = puzzleGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)][0]
                     puzzleGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)][0] = numPressed     # the 0 marking the square as not filled in is replaced by the number pressed
-                    if prevNumber != 0:
+                    if prevNumber != 0:    # so undoing doesnt skip any numbers which were directly writtin over
                         puzzleGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)][1].append(undoPos)
                         puzzleGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)][1].append("erasedMainNumber")
                         puzzleGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)][1].append(prevNumber)
@@ -489,8 +489,6 @@ print("thank you for doing sudoku-y stuff")
 
 ##################################################################################### problems ######################################################################################
 ## the time delay happens before the number is filled in when completed so the box remains empty until it goes to the finishing screen
-## you cant undo a number if you dont erase it, so if you just update the square without erasing it, it wont count on the undo
 
 '''        features to add
-try add undo?
 '''
