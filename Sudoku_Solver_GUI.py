@@ -1,7 +1,17 @@
 #~~~~~ Sudoku Solver GUI ~~~~~#
 
 import pygame, time
+from Sudoku_Solver import formatSudokuGridTo5DFrom2D, formatSudokuGridTo2DFrom5D, solve
 
+def createBlank2DGrid(size):
+    gridArray2D = []
+    for i in range(size):
+        tempArray1 = []
+        for j in range(size):
+            tempArray1.append(0)
+        gridArray2D.append(tempArray1)
+    return gridArray2D
+    
 def runMainProgramGUI():
     pygame.init()
     gameDisplay = pygame.display.set_mode((1000,601))
@@ -18,21 +28,27 @@ def runMainProgramGUI():
     otherButtonColour = (65,150,240)
     otherButtonColourHover = (95,170,255)
     otherButtonColourPressed = (60,140,225)
+    solvedColour = (26,217,33)
 
     gridNumbersFont = pygame.font.SysFont('lucidasansregular',43)
     keypadNumbersFont = pygame.font.SysFont('lucidasansregular',60)
     keypadTextFont = pygame.font.SysFont('arial',30)
+    solveButtonTextFont = pygame.font.SysFont('arial',40)
 
     finished = False
     squareClicked = False
     needToErase = False
-    restartGame = False
+    restartGrid = False
     solveGrid = False
     moveSquareUp = False
     moveSquareDown = False
     moveSquareLeft = False
     moveSquareRight = False
+    needToFillIn = False
+    solved = False
     coords = 0
+    userGrid = 0
+    solvedGrid = 0
     keypad = [[1,2,3],[4,5,6],[7,8,9]]
 
     while not finished:
@@ -40,6 +56,39 @@ def runMainProgramGUI():
             if event.type == pygame.QUIT:
                 finished = True
             if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_1 or event.key == pygame.K_KP1:
+                    numPressed = 1
+                    needToFillIn = True
+                if event.key == pygame.K_2 or event.key == pygame.K_KP2:     # can use the keypad too
+                    numPressed = 2
+                    needToFillIn = True
+                if event.key == pygame.K_3 or event.key == pygame.K_KP3:
+                    numPressed = 3
+                    needToFillIn = True
+                if event.key == pygame.K_4 or event.key == pygame.K_KP4:
+                    numPressed = 4
+                    needToFillIn = True
+                if event.key == pygame.K_5 or event.key == pygame.K_KP5:
+                    numPressed = 5
+                    needToFillIn = True
+                if event.key == pygame.K_6 or event.key == pygame.K_KP6:
+                    numPressed = 6
+                    needToFillIn = True
+                if event.key == pygame.K_7 or event.key == pygame.K_KP7:
+                    numPressed = 7
+                    needToFillIn = True
+                if event.key == pygame.K_8 or event.key == pygame.K_KP8:
+                    numPressed = 8
+                    needToFillIn = True
+                if event.key == pygame.K_9 or event.key == pygame.K_KP9:
+                    numPressed = 9
+                    needToFillIn = True
+                if event.key == pygame.K_e:
+                    needToErase = True
+                if event.key == pygame.K_r:
+                    restartGrid = True
+                if event.key == pygame.K_s:
+                    solveGrid = True
                 if event.key == pygame.K_UP:
                     moveSquareUp = True
                 if event.key == pygame.K_DOWN:
@@ -51,6 +100,9 @@ def runMainProgramGUI():
 
         mousePos = pygame.mouse.get_pos()
         gameDisplay.fill(white)
+
+        if userGrid == 0:
+            userGrid = createBlank2DGrid(9)
 
         if squareClicked == True:    # square after they have been clicked (here so the drawing of the big square goes behind the lines)
             for i in range(3):
@@ -88,7 +140,7 @@ def runMainProgramGUI():
                     if i == 0:
                         needToErase = True
                     if i == 1:
-                        restartGame = True
+                        restartGrid = True
 
         pygame.draw.rect(gameDisplay,keypadColour,(621,30,339,353),width=2)    # main keypad box
         pygame.draw.line(gameDisplay,keypadColour,start_pos=(791,318),end_pos=(791,382),width=2)
@@ -109,6 +161,7 @@ def runMainProgramGUI():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 pygame.draw.rect(gameDisplay,otherButtonColourPressed,(671,409,240,66),border_radius=8)
                 solveGrid = True
+        gameDisplay.blit(solveButtonTextFont.render("Solve",False,black),(745,419))
 
         for i in range(9):
             for j in range(9):
@@ -117,6 +170,46 @@ def runMainProgramGUI():
                     if event.type == pygame.MOUSEBUTTONDOWN:
                         squareClicked = True
                         coords = [(60*i+32),(60*j+32)]    # if the grid square is clicked on, its coordinates are marked
+
+        if userGrid != 0:
+            for i in range(9):
+                for j in range(9):
+                    if userGrid[j][i] == 0 and solvedGrid == 0:
+                        gridNumbers = gridNumbersFont.render("",False,black)
+                    elif userGrid[j][i] == 0 and solvedGrid != 0 and solvedGrid != None:
+                        gridNumbers = gridNumbersFont.render(str(solvedGrid[j][i]),False,solvedColour)
+                    else:
+                        gridNumbers = gridNumbersFont.render(str(userGrid[j][i]),False,black)
+                    gameDisplay.blit(gridNumbers,(60*i+48,60*j+34))
+
+        if restartGrid == True:
+            if userGrid != 0:
+                userGrid = 0     # when it loops back around again, the if statement at the start will make a new grid so don't need to initialise it back to a blank array here
+                solvedGrid = 0
+                solved = False
+            restartGrid = False
+
+        if needToErase == True:
+            if coords != 0 and userGrid != 0 and solved == False:
+                userGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)] = 0
+            needToErase = False
+
+        if needToFillIn == True:
+            if coords != 0 and userGrid != 0 and solved == False:
+                userGrid[int((coords[1]-32)/60)][int((coords[0]-32)/60)] = numPressed
+            needToFillIn = False
+
+        if solveGrid == True:
+            if userGrid != 0 and solved == False:
+                tempGrid = formatSudokuGridTo5DFrom2D(userGrid,3)
+                solvedGrid5D = solve(tempGrid,3)
+                if solvedGrid5D != None:
+                    solvedGrid = formatSudokuGridTo2DFrom5D(solvedGrid5D,3)
+                    solved = True
+                if solvedGrid5D == None:
+                    print("nope")
+                print(solvedGrid)
+            solveGrid = False
 
         if moveSquareUp == True:
             if coords != 0 and 0 < int((coords[1]-32)/60) <= 8:
