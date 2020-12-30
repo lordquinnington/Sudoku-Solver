@@ -1,7 +1,7 @@
 #~~~~~ Sudoku Solver GUI ~~~~~#
 
-import pygame, time
-from Sudoku_Solver import formatSudokuGridTo5DFrom2D, formatSudokuGridTo2DFrom5D, solve
+import pygame, time, csv
+from Sudoku_Solver import formatSudokuGridTo5DFrom2D, formatSudokuGridTo2DFrom5D, solve, writeCompletedGridToCSV
 
 def createBlank2DGrid(size):
     gridArray2D = []
@@ -11,6 +11,22 @@ def createBlank2DGrid(size):
             tempArray1.append(0)
         gridArray2D.append(tempArray1)
     return gridArray2D
+
+def findGridName():
+    available = False
+    x = 1
+    while not available:
+        try:
+            open("Sudoku_Grid_"+str(x)+".csv","x")
+            return x
+        except FileExistsError:
+            x += 1
+
+def writeUserGridToCSV(gridArray2D,gridNumber):    # function to write the new grid to a file 
+    with open("Sudoku_Grid_"+gridNumber+".csv","w",newline='') as gridFile:
+        toWrite = csv.writer(gridFile,delimiter=',')
+        for row in gridArray2D:
+            toWrite.writerow(row)
     
 def runMainProgramGUI():
     pygame.init()
@@ -34,7 +50,10 @@ def runMainProgramGUI():
     keypadNumbersFont = pygame.font.SysFont('lucidasansregular',60)
     keypadTextFont = pygame.font.SysFont('arial',30)
     solveButtonTextFont = pygame.font.SysFont('arial',40)
+    otherTextFont = pygame.font.SysFont('lucidasansregular',22)
 
+    timeTaken = "N/A"
+    savedAs = "N/A"
     finished = False
     squareClicked = False
     needToErase = False
@@ -46,6 +65,7 @@ def runMainProgramGUI():
     moveSquareRight = False
     needToFillIn = False
     solved = False
+    notPossible = False
     coords = 0
     userGrid = 0
     solvedGrid = 0
@@ -156,12 +176,32 @@ def runMainProgramGUI():
                 gameDisplay.blit(keypadNumbersFont.render(str(keypad[i][j]),False,black),(113*j+657,96*i+43))    # adds numbers to the keypad
 
         pygame.draw.rect(gameDisplay,otherButtonColour,(671,409,240,66),border_radius=8)      # the big blue solve button
-        if 671 < mousePos[0] < 911 and 409 < mousePos[1] < 474:
-            pygame.draw.rect(gameDisplay,otherButtonColourHover,(671,409,240,66),border_radius=8)
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                pygame.draw.rect(gameDisplay,otherButtonColourPressed,(671,409,240,66),border_radius=8)
-                solveGrid = True
-        gameDisplay.blit(solveButtonTextFont.render("Solve",False,black),(745,419))
+        if solved == False:
+            if 671 < mousePos[0] < 911 and 409 < mousePos[1] < 474:
+                pygame.draw.rect(gameDisplay,otherButtonColourHover,(671,409,240,66),border_radius=8)
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    pygame.draw.rect(gameDisplay,otherButtonColourPressed,(671,409,240,66),border_radius=8)
+                    solveGrid = True
+            gameDisplay.blit(solveButtonTextFont.render("Solve",False,black),(745,419))
+        else:
+            gameDisplay.blit(solveButtonTextFont.render("Solved!",False,black),(737,419))
+
+        gameDisplay.blit(otherTextFont.render("Erase:",False,black),(621,495))
+        gameDisplay.blit(otherTextFont.render("E",False,smallLineColour),(688,495))
+        gameDisplay.blit(otherTextFont.render("Restart:",False,black),(621,522))
+        gameDisplay.blit(otherTextFont.render("R",False,smallLineColour),(704,522))
+        gameDisplay.blit(otherTextFont.render("Solve:",False,black),(621,549))
+        gameDisplay.blit(otherTextFont.render("S",False,smallLineColour),(687,549))
+        gameDisplay.blit(otherTextFont.render("Time Taken:",False,black),(750,495))
+        if timeTaken == "N/A":
+            gameDisplay.blit(otherTextFont.render(timeTaken,False,smallLineColour),(885,495))
+        else:
+            gameDisplay.blit(otherTextFont.render(str(timeTaken)+"s",False,smallLineColour),(885,495))
+        gameDisplay.blit(otherTextFont.render("Saved As:",False,black),(750,522))
+        if savedAs == "N/A":
+            gameDisplay.blit(otherTextFont.render(savedAs,False,smallLineColour),(853,522))
+        else:
+            gameDisplay.blit(otherTextFont.render("Grid "+str(savedAs),False,smallLineColour),(853,522))
 
         for i in range(9):
             for j in range(9):
@@ -187,6 +227,8 @@ def runMainProgramGUI():
                 userGrid = 0     # when it loops back around again, the if statement at the start will make a new grid so don't need to initialise it back to a blank array here
                 solvedGrid = 0
                 solved = False
+            timeTaken = "N/A"
+            savedAs = "N/A"
             restartGrid = False
 
         if needToErase == True:
@@ -202,13 +244,18 @@ def runMainProgramGUI():
         if solveGrid == True:
             if userGrid != 0 and solved == False:
                 tempGrid = formatSudokuGridTo5DFrom2D(userGrid,3)
+                startTime = time.time()
                 solvedGrid5D = solve(tempGrid,3)
+                finishTime = time.time()
                 if solvedGrid5D != None:
+                    savedAs = findGridName()
+                    writeUserGridToCSV(userGrid,str(savedAs))
+                    timeTaken = round(finishTime-startTime,3)
                     solvedGrid = formatSudokuGridTo2DFrom5D(solvedGrid5D,3)
+                    writeCompletedGridToCSV(solvedGrid,str(savedAs))
                     solved = True
                 if solvedGrid5D == None:
-                    print("nope")
-                print(solvedGrid)
+                    notPossible = True
             solveGrid = False
 
         if moveSquareUp == True:
@@ -235,5 +282,6 @@ def runMainProgramGUI():
         time.sleep(0.082)
 
     pygame.quit()
+    print("thank you for doing sudoku-y stuff")
 
 runMainProgramGUI()
