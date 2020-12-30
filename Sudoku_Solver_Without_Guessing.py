@@ -1,6 +1,7 @@
 #~~~~ Sudoku Solver ~~~~#
 
 import csv, copy, time
+from Sudoku_Solver_GUI import findGridName
 
 ################################################ formatting functions ################################################
 
@@ -132,7 +133,7 @@ def solve(gridArray,squareSize):    # function to solve the grid
     return gridArray
 
 def initialiseSolving():
-    gridNumber = str(input("enter the grid number >"))
+    gridNumber = input("enter the grid number >")
     gridArray2D, squareSize = readIncompleteGridFromCSV(gridNumber)
     gridArray = formatSudokuGridTo5DFrom2D(gridArray2D,squareSize)
     print5DSudokuGrid(gridArray,squareSize)

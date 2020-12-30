@@ -1,6 +1,7 @@
 #~~~~~ convert from QQWing ~~~~~#
 
 import csv
+from Sudoku_Solver_GUI import findGridName
 
 def convertFromQQWing(QQWing):
     gridArray2D = []
@@ -12,10 +13,11 @@ def convertFromQQWing(QQWing):
             else:
                 tempArray1.append(int(QQWing[9*i+j]))
         gridArray2D.append(tempArray1)
-    return writeGridToCSV(gridArray2D)
+    gridNumber = findGridName()
+    return writeGridToCSV(gridArray2D,gridNumber)
 
-def writeGridToCSV(gridArray2D):
-    with open("Sudoku_Grid.csv","w",newline='') as gridFile:    # you can change the name of the file to makes to whatever your program not die
+def writeGridToCSV(gridArray2D,gridNumber):
+    with open("Sudoku_Grid_"+gridNumber+".csv","w",newline='') as gridFile:    # you can change the name of the file to makes to whatever your program not die
         toWrite = csv.writer(gridFile,delimiter=',')
         for row in gridArray2D:
             toWrite.writerow(row)

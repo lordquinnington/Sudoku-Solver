@@ -18,7 +18,8 @@ def findGridName():     # finds the next available grid name to call the new fil
     while not available:
         try:
             open("Sudoku_Grid_"+str(x)+".csv","x")
-            return x
+            print("file is grid "+str(x))
+            return str(x)
         except FileExistsError:
             x += 1
 

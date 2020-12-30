@@ -4,7 +4,7 @@
 
 validInput = False
 while not validInput:
-    option = input("pick an option: \n1) Command Line Interface \n2) Graphical User Interface")
+    option = input("pick an option: \n1) Command Line Interface \n2) Graphical User Interface \noption >")
     if option == '1':
         validCLIInput = False
         while not validCLIInput:    # ensures the user enters in a valid option

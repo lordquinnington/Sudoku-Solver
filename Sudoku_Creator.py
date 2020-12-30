@@ -7,11 +7,22 @@ from Sudoku_Solver import formatSudokuGridTo5DFrom2D, print5DSudokuGrid, formatS
 ################################################ formatting functions ################################################
 
 def writeNewGridToCSV(gridArray2D,gridNumber):    # function to write the new grid to a file 
-    with open("Sudoku_Grid_New_"+gridNumber+".csv","w",newline='') as completedGridFile:
-        toWrite = csv.writer(completedGridFile,delimiter=',')
+    with open("Sudoku_Grid_New_"+gridNumber+".csv","w",newline='') as newGridFile:
+        toWrite = csv.writer(newGridFile,delimiter=',')
         for row in gridArray2D:
             toWrite.writerow(row)
-    print("written to file")
+    print("written to file as grid "+gridNumber)
+
+def findGridName():     # finds the next available grid name to call the new file (to avoid overwriting previous grids)
+    available = False
+    x = 1
+    while not available:
+        try:
+            open("Sudoku_Grid_New_"+str(x)+".csv","x")
+            print("file is grid "+str(x))
+            return str(x)
+        except FileExistsError:     # if the file already exists then it moves onto the next one
+            x += 1
 
 ################################################ creating functions ################################################
 
@@ -32,12 +43,12 @@ def removeRandomNumber(gridArray):    # function to remove a random number from 
     
 def createNewPuzzle(newGrid,difficulty):    # function to remove the right amount of numbers from the grid
     squaresToKeep = random.randint((25+5*difficulty),((25+5*difficulty)+5))    # decides how many numbers to keep - 40-45 easy, 35-40 medium, 30-35 hard, 25-30 expert
-    for i in range(81-squaresToKeep):
+    for i in range(81-squaresToKeep):    # removes the correct amount of numbers
         newGrid = removeRandomNumber(newGrid)
     return newGrid
 
 def initialiseCreating():
-    gridNumber = input("enter a grid number >")
+    gridNumber = findGridName()
     validInput = False
     while not validInput:    # ensures the user sets the difficulty correctly
         try:
@@ -56,4 +67,4 @@ def initialiseCreating():
     finishTime = time.time()
     print("new grid created (in "+str(round(finishTime-startTime,3))+"s):")
     print5DSudokuGrid(newPuzzle,3)    # prints out the grid
-    writeNewGridToCSV(formatSudokuGridTo2DFrom5D(newPuzzle,3),gridNumber)    # writes the grid to a file
+    writeNewGridToCSV(formatSudokuGridTo2DFrom5D(newPuzzle,3),gridNumber)    # writes the grid to a file   

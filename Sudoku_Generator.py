@@ -31,6 +31,17 @@ def formatSudokuGridTo3DFrom2D(gridArray,squareSize):     # function to convert 
         newGrid.append(tempArray1)
     return newGrid
 
+def findGridName():     # finds the next available grid name to call the new file (to avoid overwriting previous grids)
+    available = False
+    x = 1
+    while not available:
+        try:
+            open("Sudoku_Grid_"+str(x)+"_Completed.csv","x")
+            print("file is completed grid "+str(x))
+            return str(x)
+        except FileExistsError:
+            x += 1
+
 ################################################ generating functions ################################################
 
 def shuffleSmallArea(gridArray,squareSize):    # function to randomly rearrange the small rows/columns (but have to be kept within their parent row/column to remain valid)
@@ -88,7 +99,7 @@ def generateCompletedGrid():
     return newGrid
 
 def initialiseGenerating():
-    gridNumber = input("enter a grid number> ")
+    gridNumber = findGridName()
     startTime = time.time()
     newGrid = generateCompletedGrid()
     finishTime = time.time()
