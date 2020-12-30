@@ -198,16 +198,18 @@ def runMainProgramGUI():
         gameDisplay.blit(otherTextFont.render("R",False,smallLineColour),(704,522))
         gameDisplay.blit(otherTextFont.render("Solve:",False,black),(621,549))
         gameDisplay.blit(otherTextFont.render("S",False,smallLineColour),(687,549))
-        gameDisplay.blit(otherTextFont.render("Time Taken:",False,black),(750,495))
+        gameDisplay.blit(otherTextFont.render("Navigate:",False,black),(750,495))
+        gameDisplay.blit(otherTextFont.render("Arrow Keys",False,smallLineColour),(851,495))
+        gameDisplay.blit(otherTextFont.render("Time Taken:",False,black),(750,522))
         if timeTaken == "N/A":
-            gameDisplay.blit(otherTextFont.render(timeTaken,False,smallLineColour),(885,495))
+            gameDisplay.blit(otherTextFont.render(timeTaken,False,smallLineColour),(885,522))
         else:
-            gameDisplay.blit(otherTextFont.render(str(timeTaken)+"s",False,smallLineColour),(885,495))
-        gameDisplay.blit(otherTextFont.render("Saved As:",False,black),(750,522))
+            gameDisplay.blit(otherTextFont.render(str(timeTaken)+"s",False,smallLineColour),(885,522))
+        gameDisplay.blit(otherTextFont.render("Saved As:",False,black),(750,549))
         if savedAs == "N/A":
-            gameDisplay.blit(otherTextFont.render(savedAs,False,smallLineColour),(853,522))
+            gameDisplay.blit(otherTextFont.render(savedAs,False,smallLineColour),(853,549))
         else:
-            gameDisplay.blit(otherTextFont.render("Grid "+str(savedAs),False,smallLineColour),(853,522))
+            gameDisplay.blit(otherTextFont.render("Grid "+str(savedAs),False,smallLineColour),(853,549))
 
         for i in range(9):
             for j in range(9):
