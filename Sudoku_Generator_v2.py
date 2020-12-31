@@ -29,7 +29,7 @@ def findGridName():     # finds the next available grid name to call the new fil
 
 ################################################ generating functions ################################################
 
-def generateGrid(size):
+def generateCompletedGrid(size):
     validGrid = False
     while not validGrid:     # loops around until it finds a valid grid
         blankGrid = createBlank2DGrid(9)    # creates a blank grid
