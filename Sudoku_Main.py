@@ -33,12 +33,12 @@ while not validInput:
     elif option == '2':
         validGUIInput = False
         while not validGUIInput:
-            optionGUI = input("pick an option: \n1) sudoku game \n2) sudoku solver")
+            optionGUI = input("pick an option: \n1) sudoku game \n2) sudoku solver \noption >")
             if optionGUI == '1':
                 from Sudoku_Game_GUI import initialiseGameGUI
                 initialiseGameGUI()
                 validGUIInput = True
-            elif option == '2':
+            elif optionGUI == '2':
                 from Sudoku_Solver_GUI import initialiseSolverGUI
                 initialiseSolverGUI()
                 validGUIInput = True
