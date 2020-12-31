@@ -53,7 +53,7 @@ def generateCompletedGrid():
 def initialiseGenerating():
     gridNumber = findGridName()
     startTime = time.time()
-    newGrid = generateGrid(9)
+    newGrid = generateCompletedGrid()
     finishTime = time.time()
     print("grid generated (in "+str(round(finishTime-startTime,3))+"s):")
     print2DSudokuGrid(newGrid,3)
