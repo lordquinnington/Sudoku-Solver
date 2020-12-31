@@ -14,7 +14,7 @@ while not validInput:
                 initialiseSolving()
                 validCLIInput = True
             elif optionCLI == '2':
-                from Sudoku_Generator import initialiseGenerating     # doesn't import it at the start to save importing a bunch of unnecessary stuff - only one of these will be used
+                from Sudoku_Generator_v2 import initialiseGenerating     # doesn't import it at the start to save importing a bunch of unnecessary stuff - only one of these will be used
                 initialiseGenerating()
                 validCLIInput = True
             elif optionCLI == '3':

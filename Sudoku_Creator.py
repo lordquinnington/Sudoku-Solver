@@ -1,7 +1,7 @@
 #~~~~~ Sudoku Creator ~~~~~#
 
 import random, csv, time
-from Sudoku_Generator import generateCompletedGrid
+from Sudoku_Generator_v2 import generateCompletedGrid
 from Sudoku_Solver import formatSudokuGridTo5DFrom2D, print5DSudokuGrid, formatSudokuGridTo2DFrom5D
 
 ################################################ formatting functions ################################################

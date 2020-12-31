@@ -1,7 +1,7 @@
 #~~~~~ Sudoku GUI ~~~~~#
 
 import pygame, time, copy
-from Sudoku_Generator import generateCompletedGrid
+from Sudoku_Generator_v2 import generateCompletedGrid
 from Sudoku_Creator import createNewPuzzle
 from Sudoku_Solver import formatSudokuGridTo5DFrom2D, formatSudokuGridTo2DFrom5D
 
