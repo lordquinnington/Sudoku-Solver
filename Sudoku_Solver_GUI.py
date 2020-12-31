@@ -1,7 +1,7 @@
 #~~~~~ Sudoku Solver GUI ~~~~~#
 
 import pygame, time, csv
-from Sudoku_Solver import formatSudokuGridTo5DFrom2D, formatSudokuGridTo2DFrom5D, solve, writeCompletedGridToCSV
+from Sudoku_Solver import formatSudokuGridTo5DFrom2D, formatSudokuGridTo2DFrom5D, solve, writeCompletedGridToCSV, findNumbersToRemove
 
 def createBlank2DGrid(size):    # function to create a blank 2D grid array for the user to edit
     gridArray2D = []
@@ -11,6 +11,21 @@ def createBlank2DGrid(size):    # function to create a blank 2D grid array for t
             tempArray1.append(0)
         gridArray2D.append(tempArray1)
     return gridArray2D
+
+def checkInitialGridIsValid(gridArray,squareSize):     # function to check the user has entered an initially valid grid (ie theres not two 5's in the same row)
+    for i in range(squareSize):
+        for j in range(squareSize):
+            for k in range(squareSize):
+                for l in range(squareSize):
+                    if gridArray[i][j][k][l][0] != 0:
+                        invalidNumbers = findNumbersToRemove(gridArray,squareSize,i,j,k,l)
+                        counter = 0
+                        for m in range(len(invalidNumbers)):
+                            if invalidNumbers[m] == gridArray[i][j][k][l][0]:    # checks how many times the number appears
+                                counter += 1
+                        if counter > 3:    # the find numbers to remove function will return 3 of the number being looked at, as that square is in all 3 of the row/column/square
+                            return False    # returns fase if it shows up elsewhere
+    return True    # returns true if the grid is initially valid
 
 def findGridName():     # finds the next available grid name to call the new file (to avoid overwriting previous grids)
     available = False
@@ -253,18 +268,22 @@ def runMainProgramGUI():
         if solveGrid == True and notPossible == False:
             if userGrid != 0 and solved == False:
                 tempGrid = formatSudokuGridTo5DFrom2D(userGrid,3)    # the grid needs to be converted into a 5D array so it can be solved
-                startTime = time.time()    # the solving is timed for research purposes 
-                solvedGrid5D = solve(tempGrid,3)
-                finishTime = time.time()
-                if solvedGrid5D != None:    # if the grid doesnt come back as none then it has been solved
-                    savedAs = findGridName()     # a grid name is found before it is saved to a csv file
-                    writeUserGridToCSV(userGrid,str(savedAs))
-                    timeTaken = round(finishTime-startTime,3)     # finds the time taken to display to the user
-                    solvedGrid = formatSudokuGridTo2DFrom5D(solvedGrid5D,3)
-                    writeCompletedGridToCSV(solvedGrid,str(savedAs))
-                    solved = True
-                if solvedGrid5D == None:    # if the grid comes back as none, the algorithm can't solve it
-                    notPossible = True     # not possible is set to true to bring up the error message
+                validUserGrid = checkInitialGridIsValid(tempGrid,3)
+                if validUserGrid == True:
+                    startTime = time.time()    # the solving is timed for research purposes 
+                    solvedGrid5D = solve(tempGrid,3)
+                    finishTime = time.time()
+                    if solvedGrid5D != None:    # if the grid doesnt come back as none then it has been solved
+                        savedAs = findGridName()     # a grid name is found before it is saved to a csv file
+                        writeUserGridToCSV(userGrid,str(savedAs))
+                        timeTaken = round(finishTime-startTime,3)     # finds the time taken to display to the user
+                        solvedGrid = formatSudokuGridTo2DFrom5D(solvedGrid5D,3)
+                        writeCompletedGridToCSV(solvedGrid,str(savedAs))
+                        solved = True
+                    if solvedGrid5D == None:    # if the grid comes back as none, the algorithm can't solve it
+                        notPossible = True     # not possible is set to true to bring up the error message
+                else:
+                    notPossible = True    # if the grid is not initially valid, the error message is displayed
             solveGrid = False
 
         if moveSquareUp == True:     # navigating with the keypad
