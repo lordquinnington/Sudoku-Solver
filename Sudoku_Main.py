@@ -18,7 +18,7 @@ while not validInput:
                 initialiseGenerating()
                 validCLIInput = True
             elif optionCLI == '3':
-                from Sudoku_Creator import initialiseCreating
+                from Sudoku_Creator_v2 import initialiseCreating
                 initialiseCreating()
                 validCLIInput = True
             else:

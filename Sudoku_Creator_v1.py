@@ -1,8 +1,7 @@
 #~~~~~ Sudoku Creator ~~~~~#
 
 import random, csv, time
-from Sudoku_Generator_v2 import generateCompletedGrid
-from Sudoku_Solver import formatSudokuGridTo5DFrom2D, print5DSudokuGrid, formatSudokuGridTo2DFrom5D
+from Sudoku_Generator_v2 import print2DSudokuGrid, generateCompletedGrid
 
 ################################################ formatting functions ################################################
 
@@ -29,13 +28,11 @@ def findGridName():     # finds the next available grid name to call the new fil
 def removeRandomNumber(gridArray):    # function to remove a random number from the grid
     zero = True
     while zero:
-        options = [0,1,2]
-        a = random.choice(options)    # generates 4 random coordinates to remove from
+        options = [0,1,2,3,4,5,6,7,8]
+        a = random.choice(options)    # generates 2 random coordinates to remove from
         b = random.choice(options)
-        c = random.choice(options)
-        d = random.choice(options)
-        if gridArray[a][b][c][d][0] != 0:    # only removes it if the square is filled in
-            gridArray[a][b][c][d][0] = 0
+        if gridArray[a][b] != 0:    # only removes it if the square is filled in
+            gridArray[a][b] = 0
             zero = False
         else:    # if the square is 0, it will have to generate another set of random coordinates
             zero = True
@@ -61,10 +58,10 @@ def initialiseCreating():
         except ValueError:    # the input is not an integer
             print("enter a valid option")
             validInput = False
-    completedGrid = formatSudokuGridTo5DFrom2D(generateCompletedGrid(),3)
+    completedGrid = generateCompletedGrid()
     startTime = time.time()
     newPuzzle = createNewPuzzle(completedGrid,difficulty-1)
     finishTime = time.time()
     print("new grid created (in "+str(round(finishTime-startTime,3))+"s):")
-    print5DSudokuGrid(newPuzzle,3)    # prints out the grid
-    writeNewGridToCSV(formatSudokuGridTo2DFrom5D(newPuzzle,3),gridNumber)    # writes the grid to a file   
+    print2DSudokuGrid(newPuzzle,3)    # prints out the grid
+    writeNewGridToCSV(newPuzzle,gridNumber)    # writes the grid to a file   

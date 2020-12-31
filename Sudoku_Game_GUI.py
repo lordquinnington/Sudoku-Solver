@@ -2,7 +2,7 @@
 
 import pygame, time, copy
 from Sudoku_Generator_v2 import generateCompletedGrid
-from Sudoku_Creator import createNewPuzzle
+from Sudoku_Creator_v2 import createNewPuzzle
 from Sudoku_Solver import formatSudokuGridTo5DFrom2D, formatSudokuGridTo2DFrom5D
 
 def formatSudokuGridTo3DFrom2D(gridArray,size):    # for converting the array to 3D for use in the main program
@@ -179,9 +179,9 @@ def runMainProgramGUI():
                         pygame.draw.rect(gameDisplay,otherButtonColourPressed,(179*i+621,60*j+32,160,50),border_radius=4)
                         difficulty = difficultyLevels[2*j+i]
                         answerGrid = generateCompletedGrid()    # generates a complete grid to make the puzzle from
-                        tempGrid  = formatSudokuGridTo5DFrom2D(answerGrid,3)
+                        tempGrid  = copy.deepcopy(answerGrid)
                         answerGrid = formatSudokuGridTo3DFrom2D(answerGrid,9)
-                        puzzleGrid = formatSudokuGridTo3DFrom2D(formatSudokuGridTo2DFrom5D(createNewPuzzle(tempGrid,difficultyLevels[4+(2*j+i)]),3),9)
+                        puzzleGrid = formatSudokuGridTo3DFrom2D(createNewPuzzle(tempGrid,difficultyLevels[4+(2*j+i)]),9)    # just be careful using v1 creator as it returns it as uses 5D as opposed to 2D
                         puzzleGrid = addUndoArray(puzzleGrid,9)
                         origGrid = copy.deepcopy(puzzleGrid)
                         showAnswer = False

@@ -2,7 +2,6 @@
 
 import random, time, csv, copy
 from Sudoku_Generator_v2 import print2DSudokuGrid, generateCompletedGrid
-from Sudoku_Solver import formatSudokuGridTo5DFrom2D, formatSudokuGridTo2DFrom5D
 from Sudoku_Solver_Without_Guessing import solve
 
 ################################################ formatting functions ################################################
