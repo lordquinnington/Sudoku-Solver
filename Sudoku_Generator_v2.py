@@ -31,23 +31,23 @@ def findGridName():     # finds the next available grid name to call the new fil
 
 def generateGrid(size):
     validGrid = False
-    while not validGrid:
-        blankGrid = createBlank2DGrid(9)
+    while not validGrid:     # loops around until it finds a valid grid
+        blankGrid = createBlank2DGrid(9)    # creates a blank grid
         options = [1,2,3,4,5,6,7,8,9]
-        for i in range(2):
+        for i in range(2):    # fills in 2 random coordinates
             coords = []
-            for i in range(2):
+            for i in range(2):     # being a 2D array, it only needs 2 coordinates
                 x = random.randint(0,8)
                 coords.append(x)
-            blankGrid[coords[0]][coords[1]] = random.choice(options)
-            options.remove(blankGrid[coords[0]][coords[1]])
+            blankGrid[coords[0]][coords[1]] = random.choice(options)     # sets the randomly chosen coordinates to whatever it chooses
+            options.remove(blankGrid[coords[0]][coords[1]])    # removes whatever just got put into the grid from the options to avoid the small chance of an invalid grid
         tempGrid = formatSudokuGridTo5DFrom2D(blankGrid,3)
-        newGrid = solve(tempGrid,3)
-        if newGrid == None:
+        newGrid = solve(tempGrid,3)     # 'solves' the grid - better than the previous way as it gives an even more random grid
+        if newGrid == None:    # if the grid comes back as none then it is unsolvable and the program will try again
             validGrid = False
         else:
             validGrid = True
-    newGrid = formatSudokuGridTo2DFrom5D(newGrid,3)
+    newGrid = formatSudokuGridTo2DFrom5D(newGrid,3)     # turns it back into a 2D array
     return newGrid
         
 def initialiseGenerating():
