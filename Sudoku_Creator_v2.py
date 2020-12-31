@@ -41,6 +41,7 @@ def removeRandomNumber(gridArray):    # function to remove a random number from 
     return gridArray
 
 def createNewPuzzle(newGrid,difficulty):
+    origGrid = copy.deepcopy(newGrid)
     squaresToKeep = random.randint((25+5*difficulty),((25+5*difficulty)+5))    # decides how many numbers to keep - 40-45 easy, 35-40 medium, 30-35 hard, 25-30 expert
     for i in range(81-squaresToKeep):
         prevGrid = copy.deepcopy(newGrid)
@@ -49,14 +50,13 @@ def createNewPuzzle(newGrid,difficulty):
         while not valid:
             j += 1
             newGrid = removeRandomNumber(newGrid)
-            tempGrid1 = formatSudokuGridTo5DFrom2D(newGrid,3)
-            tempGrid2 = solve(tempGrid1,3)
-            #print(tempGrid2)
-            if tempGrid2 == None:
+            tempGrid = solve(formatSudokuGridTo5DFrom2D(newGrid,3),3)     # a bit of a slower way of generating but should be better for solving for the user
+            if tempGrid == None:
                 newGrid = copy.deepcopy(prevGrid)
-                print("not valid ",j)
+            elif j > 81:
+                newGrid = createNewPuzzle(origGrid,difficulty)     # a bit of recursion to start again for if the program generates a grid which can't be easily solved
+                return newGrid
             else:
-                print("valid ",j)
                 valid = True
     return newGrid
 
@@ -80,4 +80,4 @@ def initialiseCreating():
     finishTime = time.time()
     print("new grid created (in "+str(round(finishTime-startTime,3))+"s):")
     print2DSudokuGrid(newPuzzle,3)    # prints out the grid
-    
+    writeNewGridToCSV(newPuzzle,gridNumber)    # writes the grid to a file 
