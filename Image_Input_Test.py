@@ -1,16 +1,34 @@
 #~~~~~ test to see if the program can take an image of a sudoku grid ~~~~~#
 
 import cv2
+#import pytesseract
+from Sudoku_Generator_v2 import print2DSudokuGrid
+#pytesseract.pytesseract.tesseract_cmd = r"C:\Users\Matthew's Desktop\AppData\Local\Programs\Tesseract-OCR\tesseract.exe"
 
 sudokuGridImage = cv2.imread("Sudoku_Image_1.png")
 cv2.imshow("image",sudokuGridImage)
 (height,width,depth) = sudokuGridImage.shape
-print("width=",width,", height=",height,", depth=",depth)
-(B, G, R) = sudokuGridImage[0, 0]
-print("R={}, G={}, B={}".format(R, G, B))
 
-#roi = sudokuGridImage[4:32, 4:32]
-#cv2.imshow("ROI", roi)
+def findROI(image,TLPixelPos,BRPixelPos):
+    ROI = image[TLPixelPos[1]:BRPixelPos[1],TLPixelPos[0]:BRPixelPos[0]]
+    return ROI
+
+def resizeMainGrid(image):     # resizing it means theres less to process and itll be a standard size
+    resizedGrid = cv2.resize(image,(153,153))
+    return resizedGrid
+
+def determineIfSquareHasNumber(square):
+    (height,width,depth) = square.shape
+    blackCount = 0
+    for i in range(height):
+        for j in range(width):
+            (B, G, R) = square[i,j]
+            if B < 200 and G < 200 and R < 200:
+                blackCount += 1
+    if blackCount > 1:
+        return True
+    return False
+    
 
 def locateMainGrid(sudokuImageGrid,height,width):
     topLeftFound = False
@@ -20,8 +38,6 @@ def locateMainGrid(sudokuImageGrid,height,width):
             if B < 200 and G < 200 and R < 200 and topLeftFound == False:
                 topLeftPixelPos = [i,j]
                 topLeftFound = True            
-    print(topLeftPixelPos)
-
     bottomRightFound = False
     for i in range(height):
         for j in range(width):
@@ -29,30 +45,59 @@ def locateMainGrid(sudokuImageGrid,height,width):
             if B < 200 and G < 200 and R < 200 and bottomRightFound == False:
                 bottomRightPixelPos = [height-i-1,width-j-1]
                 bottomRightFound = True            
-    print(bottomRightPixelPos)
     return topLeftPixelPos, bottomRightPixelPos
+
+def analyseIndividualSquares(sudokuGridImage):
+    sudokuGrid2D = []
+    for i in range(9):
+        tempArray1 = []
+        for j in range(9):
+            ROI = sudokuGridImage[(i*17)+2:(16+(i*17)),(j*17)+2:(16+(j*17))]
+            numberPresent = determineIfSquareHasNumber(ROI)
+            if numberPresent == True:
+                tempArray1.append('x')
+            else:
+                tempArray1.append(0)
+        sudokuGrid2D.append(tempArray1)
+    cv2.imshow("roi",ROI)
+    nine = ROI
+    print(nine)
+    f = open("Numbers_For_Image_Recognition.txt","w")
+    f.write(str(nine))
+    f.close()
+    return sudokuGrid2D, nine
+                                                                
 
 
 TLPixelPos, BRPixelPos = locateMainGrid(sudokuGridImage,height,width)
-test1 = sudokuGridImage.copy()
-cv2.rectangle(test1, (TLPixelPos[0],TLPixelPos[1]), (BRPixelPos[0],BRPixelPos[1]), (0,0,255),2)
-cv2.imshow("hopefully...",test1)
 
+sudokuGridImage = findROI(sudokuGridImage,TLPixelPos,BRPixelPos)
 
-#edged = cv2.Canny(image,0,259)
-#cv2.imshow("boundary",edged)
+sudokuGridImage = resizeMainGrid(sudokuGridImage)
+cv2.imshow("smaller",sudokuGridImage)
+sudokuGrid2D, nine = analyseIndividualSquares(sudokuGridImage)
+print2DSudokuGrid(sudokuGrid2D,3)
 
-#test1 = sudokuGridImage.copy()
-#cv2.rectangle(test1, (0,200), (259, 10), (0, 0, 255), 2)    # image, (dist left,dist from top), (dist from left,dist from top), (colour), line width
-#cv2.imshow("rectangle",test1)
-#img_rgb = cv2.cvtColor(roi, cv2.COLOR_BGR2RGB)
-#img_rgb = Image.open('Sudoku_Image_1.png')
-#number = pytesseract.image_to_string(img_rgb) # '--psm 11
-#print("number:",number)
+f = open("Numbers_For_Image_Recognition.txt","r")
+x = f.read()
+print(x)
 
+if nine == x:
+    print("yay")
+else:
+    print("noaw")
 
+counter = 0
+for i in range(14):
+    for j in range(14):
+        for k in range(3):
+            if nine[i][j] == x[i][j]:
+                counter += 1
+print(counter)
 '''
 convert to greyscale first?
 to get text from image, detect the number and crop so the entire number takes up the whole box then resize to a set amount. then have a base reference and compare the two numpy arrays.
 if still comes back as not matching (perhaps due to different font), check each item in the numpy array to see which is most similar and perhaps say if there is more than 10 (??) pixels different, it's not correct
+https://www.pyimagesearch.com/2018/07/19/opencv-tutorial-a-guide-to-learn-opencv/
+https://medium.com/programming-fever/license-plate-recognition-using-opencv-python-7611f85cdd6c ?
 '''
