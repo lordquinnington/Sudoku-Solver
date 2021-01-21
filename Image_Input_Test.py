@@ -28,7 +28,27 @@ def determineIfSquareHasNumber(square):
     if blackCount > 1:
         return True
     return False
-    
+
+def findROIForNumber(ROI):
+    (height,width,depth) = ROI.shape
+    for i in range(height):
+        for j in range(width):
+            (B,G,R) = ROI[i,j]
+            if B < 200 and G < 200 and R < 200 and topLeftFound == False:
+                topLeftPixelPos = [i,j]
+                topLeftFound = True            
+    bottomRightFound = False
+    for i in range(height):
+        for j in range(width):
+            (B,G,R) = ROI[height-i-1,width-j-1]
+            if B < 200 and G < 200 and R < 200 and bottomRightFound == False:
+                bottomRightPixelPos = [height-i-1,width-j-1]
+                bottomRightFound = True            
+    return topLeftPixelPos, bottomRightPixelPos
+
+def determineNumber(ROI):
+    numberReigon = findROIForNumber(ROI)
+    return 'x'
 
 def locateMainGrid(sudokuImageGrid,height,width):
     topLeftFound = False
@@ -78,22 +98,19 @@ cv2.imshow("smaller",sudokuGridImage)
 sudokuGrid2D, nine = analyseIndividualSquares(sudokuGridImage)
 print2DSudokuGrid(sudokuGrid2D,3)
 
-f = open("Numbers_For_Image_Recognition.txt","r")
-x = f.read()
-print(x)
+##f = open("Numbers_For_Image_Recognition.txt","r")
+##x = f.read()
+##print(x)
+##
+##print(x[0][1])
+##counter = 0
+##for i in range(13):
+##    for j in range(13):
+##        for k in range(2):
+##            if nine[i][j][k] == x[i][j][k]:
+##                counter += 1
+##print(counter)
 
-if nine == x:
-    print("yay")
-else:
-    print("noaw")
-
-counter = 0
-for i in range(14):
-    for j in range(14):
-        for k in range(3):
-            if nine[i][j] == x[i][j]:
-                counter += 1
-print(counter)
 '''
 convert to greyscale first?
 to get text from image, detect the number and crop so the entire number takes up the whole box then resize to a set amount. then have a base reference and compare the two numpy arrays.
