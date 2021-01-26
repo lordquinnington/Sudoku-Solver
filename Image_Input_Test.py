@@ -31,20 +31,40 @@ def determineIfSquareHasNumber(square):
 
 def findROIForNumber(ROI):
     (height,width,depth) = ROI.shape
+
+    bottomFound = False
+    topFound = False
+    leftFound = False
+    rightFound = False
+
     for i in range(height):
         for j in range(width):
             (B,G,R) = ROI[i,j]
-            if B < 200 and G < 200 and R < 200 and topLeftFound == False:
-                topLeftPixelPos = [i,j]
-                topLeftFound = True            
-    bottomRightFound = False
-    for i in range(height):
-        for j in range(width):
+            if B < 200 and G < 200 and R < 200 and topFound == False:
+                topPixel = i
             (B,G,R) = ROI[height-i-1,width-j-1]
-            if B < 200 and G < 200 and R < 200 and bottomRightFound == False:
-                bottomRightPixelPos = [height-i-1,width-j-1]
-                bottomRightFound = True            
-    return topLeftPixelPos, bottomRightPixelPos
+            if B < 200 and G < 200 and R < 200 and bottomFound == False:
+                bottomPixel = height-i-1
+            (B,G,R) = ROI[j,i]
+            if B < 200 and G < 200 and R < 200 and leftFound == False:
+                leftPixel = j
+            (B,G,R) = ROI[width-j-1,height-i-1]
+            if B < 200 and G < 200 and R < 200 and rightFound == False:
+                rightPixel = width-j-1
+    #test = ROI[rightPixel:leftPixel,bottomPixel:topPixel]
+    test = ROI[bottomPixel:topPixel,rightPixel:leftPixel]
+    #TLPP = [topPixel,leftPixel]
+    #BRPP = [bottomPixel,rightPixel]
+    #test = ROI[TLPP[1]:BRPP[1],TLPP[0]:BRPP[0]]
+    #test2 = 3
+    print(height,width)
+    print(topPixel,bottomPixel,leftPixel,rightPixel)
+    print(test)
+    cv2.imshow("new",test)
+                
+
+
+
 
 def determineNumber(ROI):
     numberReigon = findROIForNumber(ROI)
@@ -80,8 +100,9 @@ def analyseIndividualSquares(sudokuGridImage):
                 tempArray1.append(0)
         sudokuGrid2D.append(tempArray1)
     cv2.imshow("roi",ROI)
+    findROIForNumber(ROI)
     nine = ROI
-    print(nine)
+    #print(nine)
     f = open("Numbers_For_Image_Recognition.txt","w")
     f.write(str(nine))
     f.close()
@@ -117,4 +138,5 @@ to get text from image, detect the number and crop so the entire number takes up
 if still comes back as not matching (perhaps due to different font), check each item in the numpy array to see which is most similar and perhaps say if there is more than 10 (??) pixels different, it's not correct
 https://www.pyimagesearch.com/2018/07/19/opencv-tutorial-a-guide-to-learn-opencv/
 https://medium.com/programming-fever/license-plate-recognition-using-opencv-python-7611f85cdd6c ?
+(for ROI crap) https://blog.electroica.com/select-roi-or-multiple-rois-bounding-box-in-opencv-python/
 '''
